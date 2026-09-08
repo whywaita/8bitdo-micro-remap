@@ -21,7 +21,7 @@ The implementation is TypeScript-only. Do not introduce Rust, Wasm, a server dat
 
 ## 2. Bootstrap
 
-Create a React + TypeScript + Vite application configured for Cloudflare Workers.
+Create a React + TypeScript + Vite application configured for GitHub Pages.
 
 Required development tools:
 
@@ -46,7 +46,6 @@ typescript
 vite
 @vitejs/plugin-react
 @cloudflare/vite-plugin
-wrangler
 vitest
 @vitest/coverage-v8
 @testing-library/react
@@ -80,11 +79,11 @@ Add scripts:
   "test:e2e": "playwright test",
   "lint": "eslint .",
   "format:check": "prettier --check .",
-  "deploy": "pnpm build && wrangler deploy"
+  "preview": "vite preview"
 }
 ```
 
-Deliverable: the empty SPA runs locally through the Cloudflare Vite environment and deploy configuration validates.
+Deliverable: the empty SPA runs locally through Vite and builds static assets for the repository subpath.
 
 ## 3. Target file tree
 
@@ -127,7 +126,7 @@ tests/
 vite.config.ts
 vitest.config.ts
 playwright.config.ts
-wrangler.jsonc
+index.html
 ```
 
 Unit tests should live beside their modules or in a parallel `tests/unit` tree; choose one convention and use it consistently.
@@ -457,43 +456,15 @@ Build in this order:
 
 Component tests should cover the unsupported-browser path, chooser cancellation, read errors, draft cancellation, save confirmation, verification failure, disconnect, and successful restore.
 
-## 10. Milestone 7 — Cloudflare Worker
+## 10. Milestone 7 — GitHub Pages
 
-Configure `@cloudflare/vite-plugin` and Workers Static Assets.
+Use plain Vite with production base `/8bitdo-micro-remap/` and output `dist/`. No server API or Worker is needed. The application navigates through in-page state; unknown paths return 404.
 
-Use `wrangler.jsonc` with:
+Inject a restrictive production CSP meta tag before scripts and styles, and a no-referrer meta tag. Do not insert unsupported `frame-ancestors` into a meta policy. GitHub Pages response headers are host-controlled; the app cannot reproduce its former custom security headers. Web Bluetooth uses its default same-origin permission policy.
 
-```jsonc
-{
-  "$schema": "./node_modules/wrangler/config-schema.json",
-  "name": "8bitdo-micro-remap",
-  "main": "./src/worker.ts",
-  "compatibility_date": "2026-09-08",
-  "assets": {
-    "binding": "ASSETS",
-    "not_found_handling": "single-page-application",
-    "run_worker_first": true,
-  },
-  "observability": {
-    "enabled": true,
-  },
-}
-```
+Use the CI workflow to verify pull requests and deploy main-branch pushes only after checks pass. Grant Pages write and OIDC permissions only to the deployment job. Build a fresh production artifact in that job, validate it, and upload `dist/`. Pin every action to a commit SHA. Select GitHub Actions in the repository Pages settings.
 
-The Worker must:
-
-- serve assets through `env.ASSETS`;
-- expose an optional `/api/health` returning only build health;
-- add `X-Content-Type-Options: nosniff`;
-- add `Referrer-Policy: no-referrer`;
-- add `Permissions-Policy: bluetooth=(self)`;
-- add a restrictive CSP with no `wasm-unsafe-eval`;
-- add `frame-ancestors 'none'`, `object-src 'none'`, and `base-uri 'none'`;
-- avoid logging query strings, request bodies, or device data.
-
-Do not create D1, KV, R2, Durable Objects, or secrets for the first release.
-
-Tests must verify headers for the SPA root, a nested SPA route, and a static asset. Confirm that the deployed origin is HTTPS and Web Bluetooth is not blocked by the permissions policy.
+Test the repository subpath, page reload, all linked production assets, effective CSP, fake-device exclusion, and unknown-path 404 behavior.
 
 ## 11. Milestone 8 — End-to-end fake-device tests
 
@@ -511,7 +482,7 @@ Playwright scenarios:
 8. return a valid but mismatching unknown byte and verify failure;
 9. disconnect during verification and recover to disconnected state;
 10. restore supported fields from a backup, preserve current unknown bytes, and verify the complete prepared payload;
-11. reload the SPA at a nested route through the Worker;
+11. reload the application at the GitHub Pages repository subpath;
 12. reload and confirm local backups remain available.
 
 Do not attempt to automate the native Bluetooth chooser in normal Playwright CI.
@@ -566,7 +537,7 @@ Required gates:
 - no test snapshots containing raw controller configurations;
 - no network request from client code except same-origin application assets/API;
 - production bundle contains no Bluetooth address or captured private packet dump;
-- Worker deployment dry-run succeeds;
+- static production artifact validation succeeds;
 - dependency lockfile is committed.
 
 Use dependency update tooling only after the first hardware-verified release, and require protocol tests on every update.
@@ -602,7 +573,7 @@ User messages should explain the next safe action. Internal error details may co
 
 The first release is complete only when all of the following are true:
 
-- The SPA is deployed through Cloudflare Workers over HTTPS.
+- The SPA is deployed through GitHub Pages over HTTPS.
 - Supported Chromium browsers can connect to a Micro in K mode.
 - All four configuration pages are read and CRC-validated.
 - All 16 known mappings decode and edit correctly.
@@ -613,7 +584,7 @@ The first release is complete only when all of the following are true:
 - Restore creates a pre-restore backup, requires confirmation, preserves current unknown bytes, and verifies exact readback against the prepared payload.
 - Unsupported browsers receive clear guidance.
 - Raw controller data remains local by default.
-- Automated unit, component, Worker, and fake-device E2E suites pass.
+- Automated unit, component, static-hosting, and fake-device E2E suites pass.
 - Save and restore are independently cross-checked on real hardware with the official mobile app.
 - README documents limitations, supported platforms, recovery, protocol provenance, and verification level.
 

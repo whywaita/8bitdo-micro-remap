@@ -1,6 +1,6 @@
 # 8BitDo Micro Remap
 
-An unofficial, local-first keyboard configurator for the 8BitDo Micro. The React application communicates with the controller directly through Web Bluetooth; the Cloudflare Worker serves assets and security headers only.
+An unofficial, local-first keyboard configurator for the 8BitDo Micro. The React application communicates with the controller directly through Web Bluetooth; GitHub Pages serves static HTML, CSS, and JavaScript.
 
 ## Run locally
 
@@ -47,26 +47,30 @@ pnpm test:wireframe
 pnpm build
 pnpm exec playwright install chromium
 pnpm test:e2e
-pnpm deploy:check
 ```
 
-E2E tests build in `e2e` mode and inject a scripted transport. They exercise the real application service, IndexedDB, and Worker. They do not automate the native Bluetooth chooser. A normal production build excludes the scripted device and its test hooks. E2E builds must never be deployed; `pnpm deploy` always creates a fresh production build.
+E2E tests build in `e2e` mode and inject a scripted transport. They exercise the real application service, IndexedDB, and static production HTML. They do not automate the native Bluetooth chooser. A normal production build excludes the scripted device and its test hooks. E2E builds must never be deployed; the Pages job always creates and validates a fresh production build.
 
 The CI workflow also runs `actionlint`; all action references are SHA-pinned. No automated dependency update workflow is enabled before hardware verification.
 
 For semantic diagnostic information, run `VITE_DIAGNOSTICS=true pnpm dev` and open the operation log. This shows the phase, page count, and last notification length without raw packets, device names, or addresses.
 
-## Deploy
+## Deploy to GitHub Pages
+
+The repository publishes at `https://whywaita.github.io/8bitdo-micro-remap/` after changes reach `main`. In repository Settings → Pages, select **GitHub Actions** as the source. The CI workflow deploys only main-branch pushes after both validation jobs pass, with scoped Pages/OIDC permissions. Pull requests never deploy.
+
+`pnpm build` creates `dist/` with asset URLs under `/8bitdo-micro-remap/`. The deploy job builds afresh so the fake-device E2E artifact cannot be published. For local production preview:
 
 ```sh
-pnpm exec wrangler login
-pnpm deploy:check
-pnpm deploy
+pnpm build
+pnpm preview --host 127.0.0.1 --port 4174
 ```
 
-The Worker name is `8bitdo-micro-remap` in `wrangler.jsonc`. Configure the intended Cloudflare account before publishing. There are no database bindings, secrets, accounts, analytics, or synchronization services. Worker observability is disabled to avoid default request logging. Runtime device data stays in the browser. Production CSP allows only same-origin assets/connections, prevents framing, and grants Bluetooth to the same origin.
+Open `http://127.0.0.1:4174/8bitdo-micro-remap/`. Development remains available with `pnpm dev` at the server root. The UI uses in-page state, so no server-side SPA route fallback is required; unknown paths return 404.
 
-Actual deployment and real-device verification are outstanding. Automated coverage, browser flows, and a dry run are not hardware or official-app verification. The [implementation ledger](docs/implementation-status.md) records the completion boundary.
+Production HTML contains a restrictive CSP meta tag and a `no-referrer` meta tag. The CSP excludes inline scripts, eval, plugins, foreign resources, base URLs, and form submissions. A meta policy cannot enforce `frame-ancestors`; GitHub Pages does not provide application-controlled response headers, so the previous Worker header guarantees are not claimed. Web Bluetooth defaults to same-origin access and still requires HTTPS (or localhost), a supported browser, and a user gesture. Browser storage is origin-scoped: other sites under the same `whywaita.github.io` origin share the browser's security boundary; a separate custom domain provides origin isolation.
+
+No backend, Cloudflare account, Worker, Wrangler, or health API is required. Device configuration is never sent to the hosting provider by the application. Actual public deployment and full hardware verification remain separate from automated checks; see the [implementation ledger](docs/implementation-status.md).
 
 ## Protocol provenance
 

@@ -7,7 +7,7 @@ Last updated: 2026-09-09
 
 Build a browser-based configurator for the 8BitDo Micro that can read, edit, back up, write, and verify the active keyboard-mode keymap.
 
-The application is a TypeScript single-page application hosted with Cloudflare Workers Static Assets. Bluetooth communication runs locally in the user's browser through Web Bluetooth. Cloudflare Workers never communicate with the controller.
+The application is a TypeScript single-page application hosted on GitHub Pages. Bluetooth communication runs locally in the user's browser through Web Bluetooth. The static host never communicates with the controller.
 
 ## 2. Product decisions
 
@@ -25,7 +25,7 @@ Safari and Firefox are not supported in the first release. The UI must detect mi
 - TypeScript in strict mode.
 - React for UI.
 - Vite and `@cloudflare/vite-plugin` for local development and build.
-- Cloudflare Workers Static Assets for hosting.
+- GitHub Pages for static hosting.
 - Native Web Bluetooth API for BLE GATT access.
 - `Uint8Array` and `DataView` for protocol data.
 - Zustand for application state.
@@ -96,14 +96,14 @@ React UI
       -> pure protocol modules
     -> IndexedDB backup/profile repositories
 
-Cloudflare Worker
+GitHub Pages static hosting
   -> security headers
   -> SPA/static-asset delivery
 ```
 
 ### 5.1 Layer boundaries
 
-`src/protocol` must be pure TypeScript with no DOM, React, Web Bluetooth, IndexedDB, or Worker imports. All functions accept and return owned byte arrays or plain data objects.
+`src/protocol` must be pure TypeScript with no DOM, React, Web Bluetooth, IndexedDB, or hosting imports. All functions accept and return owned byte arrays or plain data objects.
 
 `src/ble` owns browser APIs, notification collection, timing, connection lifecycle, and transport errors. It does not interpret button mappings.
 
@@ -474,11 +474,11 @@ Profiles can be exported as JSON. Imported JSON must pass strict Zod validation 
 - All device access requires an explicit browser permission prompt.
 - No backend is required for the first release.
 
-## 14. Cloudflare deployment
+## 14. GitHub Pages deployment
 
-The Worker serves built assets and security headers. Configure SPA fallback and route requests through the Worker first. The client bundle performs all BLE and configuration work.
+Build static assets into `dist/` with Vite base `/8bitdo-micro-remap/`. Publish through the CI workflow only after verification passes on a main-branch push. There is no server API or SPA fallback; all application screens use in-page state. Test loading and reloading the actual repository subpath.
 
-The deployment must not claim support for non-Chromium browsers. The production page should include a short compatibility statement and a link to local backup/export instructions.
+Embed production CSP and referrer policy through HTML meta tags. Keep the strict production policy separate from Vite development. GitHub Pages response headers are not controlled by the app; do not claim the former custom `frame-ancestors`, `nosniff`, or Permissions-Policy headers. The default Bluetooth policy allows self. HTTPS and supported Chromium browsers remain required. GitHub project sites under the same host share an origin; use a dedicated custom domain if origin isolation is needed.
 
 ## 15. Verification boundary
 
@@ -503,7 +503,7 @@ This design is based on independently reverse-engineered community sources, not 
 - [8bitult Rust implementation](https://github.com/Thoxy67/8bitult)
 - [8BitDo Micro official support](https://support.8bitdo.com/ultimate/micro.html)
 - [Web Bluetooth API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Bluetooth_API)
-- [Cloudflare Workers Static Assets](https://developers.cloudflare.com/workers/vite-plugin/reference/static-assets/)
+- [GitHub Pages deployment](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)
 
 The implementation must preserve attribution and must independently review the licensing status of any source before copying code. Protocol facts and clean-room reimplementation are preferred over copying implementation text.
 

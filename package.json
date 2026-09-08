@@ -14,8 +14,7 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "deploy": "pnpm build && wrangler deploy",
-    "deploy:check": "pnpm build && wrangler deploy --dry-run"
+    "preview": "vite preview"
   },
   "dependencies": {
     "dexie": "^4.4.5",
@@ -25,7 +24,6 @@
     "zustand": "^5.0.15"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "^1.54.5",
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.63.0",
     "@testing-library/jest-dom": "^7.0.1",
@@ -44,8 +42,7 @@
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.70.0",
     "vite": "^8.2.2",
-    "vitest": "^5.0.0",
-    "wrangler": "^4.129.1"
+    "vitest": "^5.0.0"
   },
   "packageManager": "pnpm@10.33.2",
   "engines": {

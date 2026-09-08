@@ -1,6 +1,6 @@
 import { test, expect, type Page } from "@playwright/test";
 async function connect(page: Page, scenario = "") {
-  await page.goto("/?scenario=" + scenario);
+  await page.goto("./?scenario=" + scenario);
   await page.getByRole("button", { name: "コントローラーを接続" }).click();
   await expect(
     page.getByRole("heading", { name: "ボタンの割り当て" }),
@@ -21,7 +21,7 @@ async function save(page: Page) {
   await page.getByRole("button", { name: "保存を確定" }).click();
 }
 test("unsupported browser has no connect action", async ({ page }) => {
-  await page.goto("/?scenario=unsupported");
+  await page.goto("./?scenario=unsupported");
   await expect(page).toHaveTitle("8BitDo Micro Remap");
   await expect(
     page.getByRole("heading", { name: "このブラウザでは接続できません" }),
@@ -101,21 +101,25 @@ test("disconnect during verification returns to disconnected", async ({
   ).toBeEnabled();
   await expect(page.getByText(/Verified/)).toHaveCount(0);
 });
-test("nested route through Worker carries security headers", async ({
+test("Pages subpath loads with static CSP and reloads without a server fallback", async ({
   page,
 }) => {
-  const response = await page.goto("/mapping/edit");
-  expect(response?.headers()["permissions-policy"]).toBe("bluetooth=(self)");
-  expect(response?.headers()["content-security-policy"]).not.toContain(
-    "unsafe-inline",
-  );
-  expect(response?.headers()["content-security-policy"]).toContain(
-    "frame-ancestors 'none'",
-  );
+  const violations: string[] = [];
+  page.on("pageerror", (error) => violations.push(error.message));
+  await page.goto("./");
+  const csp = await page
+    .locator('meta[http-equiv="Content-Security-Policy"]')
+    .getAttribute("content");
+  expect(csp).toContain("script-src 'self'");
+  expect(csp).not.toContain("unsafe-inline");
+  expect(csp).not.toContain("unsafe-eval");
   await page.reload();
   await expect(
     page.getByRole("button", { name: "コントローラーを接続" }),
   ).toBeVisible();
+  expect(violations).toEqual([]);
+  const missing = await page.request.get("./missing-route");
+  expect(missing.status()).toBe(404);
 });
 test("320px layout fits and keyboard editor traps focus", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 740 });

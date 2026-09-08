@@ -38,7 +38,7 @@ Select **日本語** or **English** in the header to change the interface langua
 1. Connect and wait for a complete, CRC-validated read.
 2. Select a physical button. Choose a key and up to three left-side modifiers, or capture a physical keyboard chord. Escape is a valid mapping. Capturing a normal key completes capture; releasing a modifier completes a modifier-only capture.
 3. Apply to the local draft. Nothing has been written yet.
-4. Choose **デバイスに保存**. The app rereads the device, rejects changes since editing started, and persists a recovery backup.
+4. Choose **Save to device**. The app rereads the device, rejects changes since editing started, and persists a recovery backup.
 5. Review the changes and confirm. The app sends four pages, commits, rereads every page, and reports **Verified** only when all four page CRCs validate and bytes 2–179 match. Device-updated bytes 0–1 are retained from readback; their meaning is still unknown.
 
 Unknown mappings display as hexadecimal and remain untouched unless explicitly replaced. Unrecognized sleep values cannot be edited. Mouse actions, media keys, macros, S/D mode, USB configuration, and firmware updates are outside the first release.

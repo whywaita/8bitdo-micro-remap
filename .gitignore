@@ -1,0 +1,14 @@
+.worktrees/
+.whywaita/
+node_modules/
+dist/
+coverage/
+.wrangler/
+playwright-report/
+test-results/
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
+.dev.vars
+.pnpm-store/

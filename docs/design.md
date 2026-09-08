@@ -120,11 +120,9 @@ Cloudflare Worker
 ### 6.1 Known identifiers
 
 ```ts
-export const MICRO_SERVICE_UUID =
-  "0000ff10-0000-1000-8000-00805f9b34fb";
+export const MICRO_SERVICE_UUID = "0000ff10-0000-1000-8000-00805f9b34fb";
 
-export const MICRO_CHARACTERISTIC_UUID =
-  "0000ff13-0000-1000-8000-00805f9b34fb";
+export const MICRO_CHARACTERISTIC_UUID = "0000ff13-0000-1000-8000-00805f9b34fb";
 ```
 
 The observed keyboard-mode advertising name is `80EL`. The chooser should use OR filters for exact `80EL` and an `8BitDo` prefix, with `MICRO_SERVICE_UUID` in `optionalServices`. Do not use `acceptAllDevices` in normal operation.
@@ -183,23 +181,23 @@ Timing values are protocol policy constants and must be easy to change after har
 Known mappings:
 
 | Physical button | Slot | Global byte offset |
-| --- | ---: | ---: |
-| A | 3 | `0x0c` |
-| B | 4 | `0x10` |
-| X | 5 | `0x14` |
-| Y | 6 | `0x18` |
-| L / L1 | 7 | `0x1c` |
-| R / R1 | 8 | `0x20` |
-| L2 | 9 | `0x24` |
-| R2 | 10 | `0x28` |
-| Minus / Select | 13 | `0x34` |
-| Plus / Start | 14 | `0x38` |
-| Star | 15 | `0x3c` |
-| Logo | 16 | `0x40` |
-| Up | 17 | `0x44` |
-| Down | 18 | `0x48` |
-| Left | 19 | `0x4c` |
-| Right | 20 | `0x50` |
+| --------------- | ---: | -----------------: |
+| A               |    3 |             `0x0c` |
+| B               |    4 |             `0x10` |
+| X               |    5 |             `0x14` |
+| Y               |    6 |             `0x18` |
+| L / L1          |    7 |             `0x1c` |
+| R / R1          |    8 |             `0x20` |
+| L2              |    9 |             `0x24` |
+| R2              |   10 |             `0x28` |
+| Minus / Select  |   13 |             `0x34` |
+| Plus / Start    |   14 |             `0x38` |
+| Star            |   15 |             `0x3c` |
+| Logo            |   16 |             `0x40` |
+| Up              |   17 |             `0x44` |
+| Down            |   18 |             `0x48` |
+| Left            |   19 |             `0x4c` |
+| Right           |   20 |             `0x50` |
 
 Labels are UI names; slot numbers are the protocol identity.
 
@@ -278,18 +276,18 @@ Parser requirements:
 
 A write page is 62 bytes:
 
-| Bytes | Meaning |
-| --- | --- |
-| `0` | `0x04` |
-| `1` | `0x01`, configuration write |
-| `2..4` | zero |
-| `5` | `0x2d`, payload length |
-| `6` | zero |
-| `7..8` | CRC16, little-endian |
-| `9` | `0xb4` |
-| `10..12` | zero |
+| Bytes    | Meaning                           |
+| -------- | --------------------------------- |
+| `0`      | `0x04`                            |
+| `1`      | `0x01`, configuration write       |
+| `2..4`   | zero                              |
+| `5`      | `0x2d`, payload length            |
+| `6`      | zero                              |
+| `7..8`   | CRC16, little-endian              |
+| `9`      | `0xb4`                            |
+| `10..12` | zero                              |
 | `13..16` | page offset, uint32 little-endian |
-| `17..61` | 45-byte payload |
+| `17..61` | 45-byte payload                   |
 
 ### 7.7 Commit
 
@@ -320,10 +318,22 @@ Observed save captures also contain `04 50` and `04 03` messages whose semantics
 
 ```ts
 export type ButtonId =
-  | "a" | "b" | "x" | "y"
-  | "l" | "r" | "l2" | "r2"
-  | "minus" | "plus" | "star" | "logo"
-  | "up" | "down" | "left" | "right";
+  | "a"
+  | "b"
+  | "x"
+  | "y"
+  | "l"
+  | "r"
+  | "l2"
+  | "r2"
+  | "minus"
+  | "plus"
+  | "star"
+  | "logo"
+  | "up"
+  | "down"
+  | "left"
+  | "right";
 
 export interface HidChord {
   kind: "chord";

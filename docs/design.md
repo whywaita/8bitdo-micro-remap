@@ -1,4 +1,4 @@
-# 8BitDo Micro Web Configurator — Design
+# 8BitDo Micro Remap — Design
 
 Status: implementation-ready draft
 Last updated: 2026-09-09
@@ -7,7 +7,7 @@ Last updated: 2026-09-09
 
 Build a browser-based configurator for the 8BitDo Micro that can read, edit, back up, write, and verify the active keyboard-mode keymap.
 
-The application is a TypeScript single-page application hosted with Cloudflare Workers Static Assets. Bluetooth communication runs locally in the user's browser through Web Bluetooth. Cloudflare Workers never communicate with the controller.
+The application is a TypeScript single-page application hosted on GitHub Pages. Bluetooth communication runs locally in the user's browser through Web Bluetooth. The static host never communicates with the controller.
 
 ## 2. Product decisions
 
@@ -25,7 +25,7 @@ Safari and Firefox are not supported in the first release. The UI must detect mi
 - TypeScript in strict mode.
 - React for UI.
 - Vite and `@cloudflare/vite-plugin` for local development and build.
-- Cloudflare Workers Static Assets for hosting.
+- GitHub Pages for static hosting.
 - Native Web Bluetooth API for BLE GATT access.
 - `Uint8Array` and `DataView` for protocol data.
 - Zustand for application state.
@@ -81,7 +81,7 @@ These are hard requirements, not suggestions.
 6. Serialize all GATT operations; no concurrent reads or writes.
 7. Write four 45-byte pages and recompute each page CRC.
 8. Send the observed commit packet only after all page writes succeed.
-9. Reread all four pages after commit and compare the full 180-byte result with the expected payload.
+9. Reread all four pages after commit and validate all page CRCs and compare bytes 2–179 with the expected payload; accept device-updated bytes 0–1 only for post-save readback.
 10. Do not report success after only a GATT write acknowledgement.
 11. On verification failure, retain the backup and show recovery instructions.
 12. Never upload raw configurations, Bluetooth addresses, device names, or notification dumps by default.
@@ -96,14 +96,14 @@ React UI
       -> pure protocol modules
     -> IndexedDB backup/profile repositories
 
-Cloudflare Worker
+GitHub Pages static hosting
   -> security headers
   -> SPA/static-asset delivery
 ```
 
 ### 5.1 Layer boundaries
 
-`src/protocol` must be pure TypeScript with no DOM, React, Web Bluetooth, IndexedDB, or Worker imports. All functions accept and return owned byte arrays or plain data objects.
+`src/protocol` must be pure TypeScript with no DOM, React, Web Bluetooth, IndexedDB, or hosting imports. All functions accept and return owned byte arrays or plain data objects.
 
 `src/ble` owns browser APIs, notification collection, timing, connection lifecycle, and transport errors. It does not interpret button mappings.
 
@@ -120,11 +120,9 @@ Cloudflare Worker
 ### 6.1 Known identifiers
 
 ```ts
-export const MICRO_SERVICE_UUID =
-  "0000ff10-0000-1000-8000-00805f9b34fb";
+export const MICRO_SERVICE_UUID = "0000ff10-0000-1000-8000-00805f9b34fb";
 
-export const MICRO_CHARACTERISTIC_UUID =
-  "0000ff13-0000-1000-8000-00805f9b34fb";
+export const MICRO_CHARACTERISTIC_UUID = "0000ff13-0000-1000-8000-00805f9b34fb";
 ```
 
 The observed keyboard-mode advertising name is `80EL`. The chooser should use OR filters for exact `80EL` and an `8BitDo` prefix, with `MICRO_SERVICE_UUID` in `optionalServices`. Do not use `acceptAllDevices` in normal operation.
@@ -183,23 +181,23 @@ Timing values are protocol policy constants and must be easy to change after har
 Known mappings:
 
 | Physical button | Slot | Global byte offset |
-| --- | ---: | ---: |
-| A | 3 | `0x0c` |
-| B | 4 | `0x10` |
-| X | 5 | `0x14` |
-| Y | 6 | `0x18` |
-| L / L1 | 7 | `0x1c` |
-| R / R1 | 8 | `0x20` |
-| L2 | 9 | `0x24` |
-| R2 | 10 | `0x28` |
-| Minus / Select | 13 | `0x34` |
-| Plus / Start | 14 | `0x38` |
-| Star | 15 | `0x3c` |
-| Logo | 16 | `0x40` |
-| Up | 17 | `0x44` |
-| Down | 18 | `0x48` |
-| Left | 19 | `0x4c` |
-| Right | 20 | `0x50` |
+| --------------- | ---: | -----------------: |
+| A               |    3 |             `0x0c` |
+| B               |    4 |             `0x10` |
+| X               |    5 |             `0x14` |
+| Y               |    6 |             `0x18` |
+| L / L1          |    7 |             `0x1c` |
+| R / R1          |    8 |             `0x20` |
+| L2              |    9 |             `0x24` |
+| R2              |   10 |             `0x28` |
+| Minus / Select  |   13 |             `0x34` |
+| Plus / Start    |   14 |             `0x38` |
+| Star            |   15 |             `0x3c` |
+| Logo            |   16 |             `0x40` |
+| Up              |   17 |             `0x44` |
+| Down            |   18 |             `0x48` |
+| Left            |   19 |             `0x4c` |
+| Right           |   20 |             `0x50` |
 
 Labels are UI names; slot numbers are the protocol identity.
 
@@ -278,18 +276,18 @@ Parser requirements:
 
 A write page is 62 bytes:
 
-| Bytes | Meaning |
-| --- | --- |
-| `0` | `0x04` |
-| `1` | `0x01`, configuration write |
-| `2..4` | zero |
-| `5` | `0x2d`, payload length |
-| `6` | zero |
-| `7..8` | CRC16, little-endian |
-| `9` | `0xb4` |
-| `10..12` | zero |
+| Bytes    | Meaning                           |
+| -------- | --------------------------------- |
+| `0`      | `0x04`                            |
+| `1`      | `0x01`, configuration write       |
+| `2..4`   | zero                              |
+| `5`      | `0x2d`, payload length            |
+| `6`      | zero                              |
+| `7..8`   | CRC16, little-endian              |
+| `9`      | `0xb4`                            |
+| `10..12` | zero                              |
 | `13..16` | page offset, uint32 little-endian |
-| `17..61` | 45-byte payload |
+| `17..61` | 45-byte payload                   |
 
 ### 7.7 Commit
 
@@ -320,10 +318,22 @@ Observed save captures also contain `04 50` and `04 03` messages whose semantics
 
 ```ts
 export type ButtonId =
-  | "a" | "b" | "x" | "y"
-  | "l" | "r" | "l2" | "r2"
-  | "minus" | "plus" | "star" | "logo"
-  | "up" | "down" | "left" | "right";
+  | "a"
+  | "b"
+  | "x"
+  | "y"
+  | "l"
+  | "r"
+  | "l2"
+  | "r2"
+  | "minus"
+  | "plus"
+  | "star"
+  | "logo"
+  | "up"
+  | "down"
+  | "left"
+  | "right";
 
 export interface HidChord {
   kind: "chord";
@@ -380,7 +390,7 @@ Partial data is diagnostic only and never becomes an editable baseline.
 6. Show a confirmation summary derived from byte differences.
 7. If confirmed, write all four generated pages and then commit.
 8. Perform another full read.
-9. Require byte-for-byte equality with the expected 180-byte payload.
+9. Require valid CRCs for all pages and byte-for-byte equality at offsets 2–179. Accept device-updated bytes 0–1 and retain the full actual readback.
 10. Report verified success or a verification failure with restore guidance.
 
 If the newly read baseline differs from the baseline used to edit the screen, show that the device changed and require the user to review before writing.
@@ -394,7 +404,7 @@ If the newly read baseline differs from the baseline used to edit the screen, sh
 5. Back up the current baseline as a new recovery point and await persistence.
 6. Display the known-field differences and all skipped fields. Require explicit confirmation before any configuration-page write; cancellation sends no configuration pages or commit.
 7. Write all four pages of the prepared payload and commit.
-8. Reread and require byte-for-byte equality with the prepared 180-byte payload, not the selected backup.
+8. Reread all 180 bytes, validate page CRCs, and require equality at offsets 2–179 with the prepared payload, not the selected backup. Retain device-updated bytes 0–1.
 
 Restore never writes the selected backup payload wholesale. Raw backups retain the original bytes for diagnosis, but the first release restores only supported known fields. The UI must explain this limitation before confirmation. Restore preparation and confirmation use the same connection-generation, stale-operation, and single-use safeguards as Save.
 
@@ -464,11 +474,11 @@ Profiles can be exported as JSON. Imported JSON must pass strict Zod validation 
 - All device access requires an explicit browser permission prompt.
 - No backend is required for the first release.
 
-## 14. Cloudflare deployment
+## 14. GitHub Pages deployment
 
-The Worker serves built assets and security headers. Configure SPA fallback and route requests through the Worker first. The client bundle performs all BLE and configuration work.
+Build static assets into `dist/` with Vite base `/8bitdo-micro-remap/`. Publish through the CI workflow only after verification passes on a main-branch push. There is no server API or SPA fallback; all application screens use in-page state. Test loading and reloading the actual repository subpath.
 
-The deployment must not claim support for non-Chromium browsers. The production page should include a short compatibility statement and a link to local backup/export instructions.
+Embed production CSP and referrer policy through HTML meta tags. Keep the strict production policy separate from Vite development. GitHub Pages response headers are not controlled by the app; do not claim the former custom `frame-ancestors`, `nosniff`, or Permissions-Policy headers. The default Bluetooth policy allows self. HTTPS and supported Chromium browsers remain required. GitHub project sites under the same host share an origin; use a dedicated custom domain if origin isolation is needed.
 
 ## 15. Verification boundary
 
@@ -493,7 +503,7 @@ This design is based on independently reverse-engineered community sources, not 
 - [8bitult Rust implementation](https://github.com/Thoxy67/8bitult)
 - [8BitDo Micro official support](https://support.8bitdo.com/ultimate/micro.html)
 - [Web Bluetooth API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Bluetooth_API)
-- [Cloudflare Workers Static Assets](https://developers.cloudflare.com/workers/vite-plugin/reference/static-assets/)
+- [GitHub Pages deployment](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)
 
 The implementation must preserve attribution and must independently review the licensing status of any source before copying code. Protocol facts and clean-room reimplementation are preferred over copying implementation text.
 
@@ -520,3 +530,7 @@ e2 00 00 00 e0 06 00 00 e0 19 00 00 00
 ```
 
 The nonzero vector decodes slots 3–10 as Enter, Backspace, Ctrl+W, Ctrl+Shift+T, Ctrl, Alt, Ctrl+C, and Ctrl+V. Treat earlier bytes as unknown configuration data and preserve them.
+
+## Hardware observation update (2026-09-09)
+
+The device updates global bytes 0–1 when committing a mapping. The meaning of these bytes is unknown. The outgoing payload still preserves them exactly. The post-save/restore verifier validates all four CRCs, compares every byte at offsets 2–179, and retains the actual returned header. Baseline/stale-device checks still compare all 180 bytes. This is a scoped exception to readback equality, not permission to ignore other unknown fields. See [the investigation](save-investigation.md).

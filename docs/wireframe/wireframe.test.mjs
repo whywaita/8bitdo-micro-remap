@@ -24,6 +24,8 @@ test("static screens are offline, linked, titled and uniquely identified", () =>
   for (const file of files) {
     const html = readFileSync(join(root, file), "utf8");
     assert.match(html, /lang="ja"/);
+    assert.match(html, /<title>[^<]*8BitDo Micro Remap/);
+    assert.match(html, /aria-label="8BitDo Micro Remap"/);
     assert.match(html, /name="viewport"/);
     assert.equal((html.match(/<h1[ >]/g) || []).length, 1, file);
     assert.doesNotMatch(

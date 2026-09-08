@@ -1,4 +1,4 @@
-# Micro Web Configurator
+# 8BitDo Micro Remap
 
 An unofficial, local-first keyboard configurator for the 8BitDo Micro. The React application communicates with the controller directly through Web Bluetooth; the Cloudflare Worker serves assets and security headers only.
 
@@ -64,7 +64,7 @@ pnpm deploy:check
 pnpm deploy
 ```
 
-The Worker name is `8bitdo-micro-configurator` in `wrangler.jsonc`. Configure the intended Cloudflare account before publishing. There are no database bindings, secrets, accounts, analytics, or synchronization services. Worker observability is disabled to avoid default request logging. Runtime device data stays in the browser. Production CSP allows only same-origin assets/connections, prevents framing, and grants Bluetooth to the same origin.
+The Worker name is `8bitdo-micro-remap` in `wrangler.jsonc`. Configure the intended Cloudflare account before publishing. There are no database bindings, secrets, accounts, analytics, or synchronization services. Worker observability is disabled to avoid default request logging. Runtime device data stays in the browser. Production CSP allows only same-origin assets/connections, prevents framing, and grants Bluetooth to the same origin.
 
 Actual deployment and real-device verification are outstanding. Automated coverage, browser flows, and a dry run are not hardware or official-app verification. The [implementation ledger](docs/implementation-status.md) records the completion boundary.
 

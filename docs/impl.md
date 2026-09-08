@@ -1,4 +1,4 @@
-# 8BitDo Micro Web Configurator — Implementation Plan
+# 8BitDo Micro Remap — Implementation Plan
 
 Status: ready for a coding agent
 Depends on: `design.md`
@@ -466,7 +466,7 @@ Use `wrangler.jsonc` with:
 ```jsonc
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
-  "name": "8bitdo-micro-configurator",
+  "name": "8bitdo-micro-remap",
   "main": "./src/worker.ts",
   "compatibility_date": "2026-09-08",
   "assets": {

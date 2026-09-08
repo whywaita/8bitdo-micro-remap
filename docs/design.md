@@ -1,4 +1,4 @@
-# 8BitDo Micro Web Configurator — Design
+# 8BitDo Micro Remap — Design
 
 Status: implementation-ready draft
 Last updated: 2026-09-09

@@ -153,8 +153,8 @@ export function App({ runtime }: { runtime: Runtime }) {
         本文へ
       </a>
       <header>
-        <a className="brand" href="#main">
-          MICRO<span>WEB CONFIGURATOR</span>
+        <a className="brand" href="#main" aria-label="8BitDo Micro Remap">
+          8BitDo Micro<span>Remap</span>
         </a>
         <nav aria-label="メイン">
           <button disabled={busy} onClick={() => void run(showBackups)}>

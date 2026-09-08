@@ -22,6 +22,7 @@ async function save(page: Page) {
 }
 test("unsupported browser has no connect action", async ({ page }) => {
   await page.goto("/?scenario=unsupported");
+  await expect(page).toHaveTitle("8BitDo Micro Remap");
   await expect(
     page.getByRole("heading", { name: "このブラウザでは接続できません" }),
   ).toBeVisible();

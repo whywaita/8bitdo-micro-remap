@@ -1,1 +1,1 @@
-# 8bitdomicro-web
+# 8BitDo Micro Remap

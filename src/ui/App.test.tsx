@@ -34,6 +34,7 @@ async function connect() {
 it("explains unsupported browsers before connect", () => {
   render(<App runtime={{ ...runtime, supported: false }} />);
   expect(screen.getByText(/このブラウザでは接続できません/)).toBeTruthy();
+  expect(screen.getByRole("link", { name: "8BitDo Micro Remap" })).toBeTruthy();
   expect(
     screen.queryByRole("button", { name: "コントローラーを接続" }),
   ).toBeNull();

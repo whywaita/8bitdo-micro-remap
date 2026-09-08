@@ -1,6 +1,6 @@
 # Hardware verification record
 
-Status: **Not performed**. No deployment URL or actual device results have been supplied. Do not label the application hardware-verified or official-app cross-checked.
+Status: **Partial investigation performed**. On 2026-09-09, a diagnostic BLE client saved a single A mapping and the user confirmed A in the official app. Device-generated changes at offsets 0–1 explained the web verifier failure. The updated web workflow, full restoration procedure, deployment, and platform coverage remain unverified; this is not a release-wide hardware pass. See [the investigation](save-investigation.md).
 
 ## Environment
 

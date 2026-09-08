@@ -79,15 +79,20 @@ it("commit failure is not success", async () => {
   await expect(service.commitSave(prepared)).rejects.toThrow("COMMIT_FAILED");
   expect(service.state.verified).toBe(false);
 });
-it.each([12, 150])("detects readback mismatch at byte %i", async (index) => {
-  await service.connect();
-  const prepared = await service.prepareSave(edit);
-  device.onWrite = (p) => {
-    if (p[1] === 2 && device.readCount === 2) device.payload[index] = 123;
-  };
-  await expect(service.commitSave(prepared)).rejects.toThrow("VERIFY_FAILED");
-  expect(service.state.verified).toBe(false);
-});
+it.each(Array.from({ length: 178 }, (_, i) => i + 2))(
+  "detects readback mismatch at byte %i",
+  async (index) => {
+    await service.connect();
+    const prepared = await service.prepareSave(edit);
+    device.onWrite = (p) => {
+      if (p[1] === 2 && device.readCount === 2) device.payload[index] = 123;
+    };
+    await expect(service.commitSave(prepared)).rejects.toThrow("VERIFY_FAILED");
+    expect(service.state.verified).toBe(false);
+    expect(service.state.log.at(-1)?.event).toContain("読み戻し不一致");
+    expect(service.state.log.at(-1)?.event).toContain(String(index));
+  },
+);
 it("initial incomplete reads never create a baseline", async () => {
   device.transform = (p) => (p[12] === 135 ? [] : [p]);
   await expect(service.connect()).rejects.toThrow("INCOMPLETE_CONFIG");
@@ -130,6 +135,9 @@ it.each(["drop", "crc"] as const)(
       return [p];
     };
     await expect(service.commitSave(prepared)).rejects.toThrow("VERIFY_FAILED");
+    expect(service.state.log.at(-1)?.event).toContain(
+      mode === "drop" ? "READ_TIMEOUT" : "INVALID_CRC",
+    );
   },
 );
 it("cancellation and token reuse cause no writes", async () => {
@@ -277,5 +285,39 @@ it.each([1, 6])(
       command === 1 ? "WRITE_FAILED" : "COMMIT_FAILED",
     );
     expect(device.connected).toBe(false);
+  },
+);
+
+it.each(["save", "restore"] as const)(
+  "accepts device-updated header after %s and retains the actual snapshot",
+  async (mode) => {
+    device.payload[0] = 17;
+    device.payload[1] = 23;
+    await service.connect();
+    const original = device.payload.slice();
+    const old = original.slice();
+    old[12] = 26;
+    backups.set("old", old);
+    const token =
+      mode === "save"
+        ? await service.prepareSave(edit)
+        : await service.prepareRestore("old");
+    device.onWrite = (packet) => {
+      if (packet[1] === 1 && packet[13] === 0) {
+        expect(packet.slice(17, 19)).toEqual(original.slice(0, 2));
+      }
+      if (packet[1] === 2 && device.readCount === 2) {
+        device.payload[0] = 31;
+        device.payload[1] = 47;
+      }
+    };
+    const result = await service.commitSave(token);
+    expect(service.state.verified).toBe(true);
+    expect(result.raw.slice(0, 2)).toEqual(Uint8Array.of(31, 47));
+    expect(service.state.snapshot?.raw).toEqual(result.raw);
+    expect(backups.get(token.backupId)).toEqual(original);
+    expect(service.state.log.at(-1)?.event).toContain("先頭2バイト");
+    // A subsequent preparation must compare against the real returned header.
+    await expect(service.prepareSave({ mappings: {} })).resolves.toBeDefined();
   },
 );

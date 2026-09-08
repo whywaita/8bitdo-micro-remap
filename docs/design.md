@@ -81,7 +81,7 @@ These are hard requirements, not suggestions.
 6. Serialize all GATT operations; no concurrent reads or writes.
 7. Write four 45-byte pages and recompute each page CRC.
 8. Send the observed commit packet only after all page writes succeed.
-9. Reread all four pages after commit and compare the full 180-byte result with the expected payload.
+9. Reread all four pages after commit and validate all page CRCs and compare bytes 2–179 with the expected payload; accept device-updated bytes 0–1 only for post-save readback.
 10. Do not report success after only a GATT write acknowledgement.
 11. On verification failure, retain the backup and show recovery instructions.
 12. Never upload raw configurations, Bluetooth addresses, device names, or notification dumps by default.
@@ -390,7 +390,7 @@ Partial data is diagnostic only and never becomes an editable baseline.
 6. Show a confirmation summary derived from byte differences.
 7. If confirmed, write all four generated pages and then commit.
 8. Perform another full read.
-9. Require byte-for-byte equality with the expected 180-byte payload.
+9. Require valid CRCs for all pages and byte-for-byte equality at offsets 2–179. Accept device-updated bytes 0–1 and retain the full actual readback.
 10. Report verified success or a verification failure with restore guidance.
 
 If the newly read baseline differs from the baseline used to edit the screen, show that the device changed and require the user to review before writing.
@@ -404,7 +404,7 @@ If the newly read baseline differs from the baseline used to edit the screen, sh
 5. Back up the current baseline as a new recovery point and await persistence.
 6. Display the known-field differences and all skipped fields. Require explicit confirmation before any configuration-page write; cancellation sends no configuration pages or commit.
 7. Write all four pages of the prepared payload and commit.
-8. Reread and require byte-for-byte equality with the prepared 180-byte payload, not the selected backup.
+8. Reread all 180 bytes, validate page CRCs, and require equality at offsets 2–179 with the prepared payload, not the selected backup. Retain device-updated bytes 0–1.
 
 Restore never writes the selected backup payload wholesale. Raw backups retain the original bytes for diagnosis, but the first release restores only supported known fields. The UI must explain this limitation before confirmation. Restore preparation and confirmation use the same connection-generation, stale-operation, and single-use safeguards as Save.
 
@@ -530,3 +530,7 @@ e2 00 00 00 e0 06 00 00 e0 19 00 00 00
 ```
 
 The nonzero vector decodes slots 3–10 as Enter, Backspace, Ctrl+W, Ctrl+Shift+T, Ctrl, Alt, Ctrl+C, and Ctrl+V. Treat earlier bytes as unknown configuration data and preserve them.
+
+## Hardware observation update (2026-09-09)
+
+The device updates global bytes 0–1 when committing a mapping. The meaning of these bytes is unknown. The outgoing payload still preserves them exactly. The post-save/restore verifier validates all four CRCs, compares every byte at offsets 2–179, and retains the actual returned header. Baseline/stale-device checks still compare all 180 bytes. This is a scoped exception to readback equality, not permission to ignore other unknown fields. See [the investigation](save-investigation.md).

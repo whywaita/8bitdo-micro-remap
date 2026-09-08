@@ -21,7 +21,7 @@ Open the printed localhost URL in Chrome or Edge. Production requires HTTPS. Win
 2. Select a physical button. Choose a key and up to three left-side modifiers, or capture a physical keyboard chord. Escape is a valid mapping. Capturing a normal key completes capture; releasing a modifier completes a modifier-only capture.
 3. Apply to the local draft. Nothing has been written yet.
 4. Choose **デバイスに保存**. The app rereads the device, rejects changes since editing started, and persists a recovery backup.
-5. Review the changes and confirm. The app sends four pages, commits, rereads every page, and reports **Verified** only when all 180 bytes match.
+5. Review the changes and confirm. The app sends four pages, commits, rereads every page, and reports **Verified** only when all four page CRCs validate and bytes 2–179 match. Device-updated bytes 0–1 are retained from readback; their meaning is still unknown.
 
 Unknown mappings display as hexadecimal and remain untouched unless explicitly replaced. Unrecognized sleep values cannot be edited. Mouse actions, media keys, macros, S/D mode, USB configuration, and firmware updates are outside the first release.
 
@@ -31,7 +31,7 @@ Backups are retained in this browser's IndexedDB until explicitly deleted. Clear
 
 If an operation fails, retain the backups, check power and K mode, reconnect, and reread. Select a backup if restoration is needed. Restoration first backs up the current configuration, then asks for confirmation. It restores **supported known fields only**, preserves the current unknown bytes, and lists skipped fields. It does not overwrite the full device payload from an older backup. Verification compares against the prepared overlay.
 
-If recovery fails, disconnect the browser and inspect the controller in the official mobile app. Hardware interoperability has not yet been verified; see [the verification record](docs/hardware-verification.md).
+If recovery fails, disconnect the browser and inspect the controller in the official mobile app. A single-button save was checked on the investigation device and confirmed in the official app; restoration and broader hardware interoperability remain unverified; see [the verification record](docs/hardware-verification.md).
 
 ## Profiles
 

@@ -101,6 +101,14 @@ export class ControllerService {
     this.current = { ...this.current, ...patch };
     for (const listener of this.listeners) listener();
   }
+  private log(event: string): void {
+    this.update({
+      log: [
+        ...this.current.log.slice(-99),
+        { time: new Date(this.clock()).toISOString(), event },
+      ],
+    });
+  }
   private phase(phase: Phase): void {
     this.update({
       phase,
@@ -409,11 +417,30 @@ export class ControllerService {
       try {
         snapshot = await this.read(signal);
       } catch (error) {
+        this.log(
+          `保存後の読み戻し失敗: ${errorCode(error)} / 受信 ${this.current.progress}/4 ページ`,
+        );
         if (errorCode(error) === "DISCONNECTED") throw error;
         throw new AppError("VERIFY_FAILED");
       }
-      if (!equalBytes(snapshot.raw, pending.expected))
+      // Hardware observation: commit updates offsets 0–1. Their meaning is
+      // unknown; preserve them on write, accept the returned bytes only after
+      // all four page CRCs and every byte at offsets 2–179 have been verified.
+      // See docs/save-investigation.md. This exception applies only to readback.
+      if (!equalBytes(snapshot.raw.slice(2), pending.expected.slice(2))) {
+        const offsets = Array.from(snapshot.raw.keys()).filter(
+          (offset) => snapshot.raw[offset] !== pending.expected[offset],
+        );
+        this.log(
+          `読み戻し不一致: ${offsets.length} バイト / オフセット (0始まり): ${offsets.join(", ")}`,
+        );
         throw new AppError("VERIFY_FAILED");
+      }
+      if (!equalBytes(snapshot.raw.slice(0, 2), pending.expected.slice(0, 2))) {
+        this.log(
+          "本体が先頭2バイトを更新。ページCRCと残り178バイトの一致を確認",
+        );
+      }
       this.update({ snapshot, phase: "ready", verified: true });
       return parseConfig(snapshot.raw);
     });

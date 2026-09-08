@@ -173,7 +173,7 @@ export function App({ runtime }: { runtime: Runtime }) {
         </div>
         {state.verified && !dirty && (
           <p className="success">
-            Verified · 本体の全設定が予定した設定と一致しました。
+            Verified · ページCRCと設定178バイトの一致を確認しました。
           </p>
         )}
         {notice && <p role="status">{notice}</p>}
@@ -640,7 +640,13 @@ export function App({ runtime }: { runtime: Runtime }) {
             未知の設定は復元しません。スキップ項目は現在値を保持します。バックアップはこのブラウザ専用です。共有にはプロファイル
             JSON を使ってください。
           </p>
-          <p>実機動作および公式アプリとの照合は未確認です。</p>
+          <p>
+            保存後、本体が先頭2バイトを更新することがあります。この2バイトは一致比較から除外し、
+            全4ページのCRCと残り178バイトを検証します。先頭2バイトの意味は未解明です。
+          </p>
+          <p>
+            調査対象の実機でAボタンの保存と公式アプリ表示を確認済みです。復元と他の環境は未検証です。
+          </p>
           <button onClick={clearPanel}>閉じる</button>
         </Modal>
       )}

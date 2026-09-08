@@ -339,7 +339,7 @@ export class ControllerService {
 
 `commitSave()` must reject a prepared operation that is stale, already used, belongs to another connection generation, or lacks a persisted backup.
 
-After page writes and commit, reread and compare all 180 bytes. Return success only on exact equality.
+After page writes and commit, reread all 180 bytes and validate every page CRC. Require exact equality at offsets 2–179. Accept only the observed device-generated updates at offsets 0–1 and retain the actual returned snapshot. Every other mismatch fails verification.
 
 Required failure tests:
 
@@ -533,7 +533,7 @@ Test procedure:
 2. Connect from the deployed HTTPS site.
 3. Read four CRC-valid pages.
 4. Save one harmless mapping change.
-5. Confirm that the application reports full 180-byte verified readback.
+5. Confirm that the application reports complete readback with valid page CRCs and matching bytes 2–179.
 6. Disconnect the browser.
 7. Open the official mobile app and independently confirm the mapping.
 8. Reconnect to the web app and restore the pre-save backup.
@@ -609,7 +609,7 @@ The first release is complete only when all of the following are true:
 - Save begins with a fresh read and committed local backup.
 - Only confirmed bytes change.
 - Four pages are written with correct CRCs, followed by commit.
-- Full 180-byte readback matches before success is shown.
+- All four page CRCs validate and bytes 2–179 match before success is shown; device-updated bytes 0–1 are retained.
 - Restore creates a pre-restore backup, requires confirmation, preserves current unknown bytes, and verifies exact readback against the prepared payload.
 - Unsupported browsers receive clear guidance.
 - Raw controller data remains local by default.
@@ -629,3 +629,7 @@ After the first hardware-verified release, possible follow-ups are:
 - investigation of device-side profile management and currently unknown packets.
 
 Each new protocol field requires independent evidence, golden vectors, byte-preservation tests, and a documented recovery procedure before it may be written.
+
+## Hardware observation update (2026-09-09)
+
+The device updates global bytes 0–1 when committing a mapping. The meaning of these bytes is unknown. The outgoing payload still preserves them exactly. The post-save/restore verifier validates all four CRCs, compares every byte at offsets 2–179, and retains the actual returned header. Baseline/stale-device checks still compare all 180 bytes. This is a scoped exception to readback equality, not permission to ignore other unknown fields. See [the investigation](save-investigation.md).

@@ -1,3 +1,4 @@
+import { useLanguage, LanguageProvider } from "./i18n";
 import { useEffect, useState } from "react";
 import { useStore } from "zustand";
 import type { Runtime } from "../application/runtime";
@@ -8,7 +9,7 @@ import {
   type ButtonId,
 } from "../protocol/buttons";
 import { applyConfigEdits, parseConfig, equalBytes } from "../protocol/config";
-import { formatChord } from "../protocol/hid-codec";
+import { formatChord as rawFormatChord } from "../protocol/hid-codec";
 import type { ConfigEdits } from "../protocol/types";
 import {
   AppError,
@@ -50,6 +51,16 @@ type Panel =
   | "delete"
   | null;
 export function App({ runtime }: { runtime: Runtime }) {
+  return (
+    <LanguageProvider>
+      <AppContent runtime={runtime} />
+    </LanguageProvider>
+  );
+}
+function AppContent({ runtime }: { runtime: Runtime }) {
+  const { t, language, setLanguage } = useLanguage();
+  const formatChord = (value: Parameters<typeof rawFormatChord>[0]) =>
+    t(rawFormatChord(value));
   const state = useStore(runtime.store);
   const [edits, setEdits] = useState<ConfigEdits>({ mappings: {} });
   const [editing, setEditing] = useState<ButtonId | null>(null);
@@ -147,46 +158,59 @@ export function App({ runtime }: { runtime: Runtime }) {
   };
   return (
     <ModalErrorContext.Provider
-      value={activeError ? ERROR_MESSAGES[activeError] : null}
+      value={activeError ? t(ERROR_MESSAGES[activeError]) : null}
     >
       <a className="skip" href="#main">
-        本文へ
+        {t("本文へ")}
       </a>
       <header>
         <a className="brand" href="#main" aria-label="8BitDo Micro Remap">
           8BitDo Micro<span>Remap</span>
         </a>
-        <nav aria-label="メイン">
+        <nav aria-label={t("メイン")}>
+          <select
+            className="language-select"
+            aria-label="Language / 言語"
+            value={language}
+            onChange={(event) =>
+              setLanguage(event.target.value === "en" ? "en" : "ja")
+            }
+          >
+            <option value="ja">日本語</option>
+            <option value="en">English</option>
+          </select>
           <button disabled={busy} onClick={() => void run(showBackups)}>
-            バックアップ
+            {t("バックアップ")}
           </button>
           <button disabled={busy} onClick={() => setPanel("help")}>
-            ヘルプ
+            {t("ヘルプ")}
           </button>
         </nav>
       </header>
       <main id="main">
         <p className="eyebrow">8BITDO MICRO / KEYBOARD MODE</p>
         <div role="status" aria-live="polite" className="status">
-          {phaseLabels[state.phase]}
+          {t(phaseLabels[state.phase])}
           {busy && <span> · {state.progress} / 4</span>}
         </div>
         {state.verified && !dirty && (
           <p className="success">
-            Verified · ページCRCと設定178バイトの一致を確認しました。
+            {t("Verified · ページCRCと設定178バイトの一致を確認しました。")}
           </p>
         )}
-        {notice && <p role="status">{notice}</p>}
+        {notice && <p role="status">{t(notice)}</p>}
         {activeError && (
           <section role="alert" className="notice">
-            <p>{ERROR_MESSAGES[activeError]}</p>
+            <p>{t(ERROR_MESSAGES[activeError])}</p>
             {[
               "VERIFY_FAILED",
               "WRITE_FAILED",
               "COMMIT_FAILED",
               "DISCONNECTED",
             ].includes(activeError) && (
-              <button onClick={() => setPanel("help")}>復旧手順を見る</button>
+              <button onClick={() => setPanel("help")}>
+                {t("復旧手順を見る")}
+              </button>
             )}
             <button
               disabled={busy}
@@ -195,30 +219,32 @@ export function App({ runtime }: { runtime: Runtime }) {
                 runtime.service.dismissError();
               }}
             >
-              閉じる
+              {t("閉じる")}
             </button>
           </section>
         )}
         {!runtime.supported ? (
           <section>
-            <h1>このブラウザでは接続できません</h1>
+            <h1>{t("このブラウザでは接続できません")}</h1>
             <p>
-              Windows・macOS・ChromeOS・Android の Web Bluetooth 対応 Chrome /
-              Edge を利用してください。
+              {t(
+                "Windows・macOS・ChromeOS・Android の Web Bluetooth 対応 Chrome / Edge を利用してください。",
+              )}
             </p>
             <p>
-              実機接続には HTTPS または localhost が必要です。Safari / Firefox
-              は未対応です。
+              {t(
+                "実機接続には HTTPS または localhost が必要です。Safari / Firefox は未対応です。",
+              )}
             </p>
           </section>
         ) : !state.snapshot ? (
           <section className="welcome">
             <h1>
-              小さなコントローラーに、
+              {t("小さなコントローラーに、")}
               <br />
-              あなたの操作を。
+              {t("あなたの操作を。")}
             </h1>
-            <div className="controller" aria-label="Micro の模式図">
+            <div className="controller" aria-label={t("Micro の模式図")}>
               <span>✚</span>
               <small>
                 − &nbsp; +<br />
@@ -229,29 +255,31 @@ export function App({ runtime }: { runtime: Runtime }) {
               </span>
             </div>
             <ol>
-              <li>本体を K モードに切り替える</li>
-              <li>Bluetooth を有効にして本体を接続可能にする</li>
-              <li>ブラウザの一覧から Micro を選ぶ</li>
+              <li>{t("本体を K モードに切り替える")}</li>
+              <li>{t("Bluetooth を有効にして本体を接続可能にする")}</li>
+              <li>{t("ブラウザの一覧から Micro を選ぶ")}</li>
             </ol>
             <button
               className="primary"
               disabled={busy}
               onClick={() => void run(() => runtime.service.connect())}
             >
-              コントローラーを接続
+              {t("コントローラーを接続")}
             </button>
             {busy && (
               <button onClick={() => runtime.service.disconnect()}>
-                接続を中止
+                {t("接続を中止")}
               </button>
             )}
-            <p>設定とバックアップはこのブラウザ内で扱います。</p>
+            <p>{t("設定とバックアップはこのブラウザ内で扱います。")}</p>
           </section>
         ) : (
           <section>
             <div className="title-row">
-              <h1>ボタンの割り当て</h1>
-              <span>{dirty ? "未保存の変更あり" : "未保存の変更なし"}</span>
+              <h1>{t("ボタンの割り当て")}</h1>
+              <span>
+                {dirty ? t("未保存の変更あり") : t("未保存の変更なし")}
+              </span>
             </div>
             <div className="mapping-grid">
               {BUTTONS.map((b) => (
@@ -266,7 +294,10 @@ export function App({ runtime }: { runtime: Runtime }) {
                   }
                   key={b.id}
                   disabled={!ready}
-                  aria-label={`${b.label} の割り当て ${formatChord(draft!.mappings[b.id])}`}
+                  aria-label={t("{button} の割り当て {mapping}", {
+                    button: b.label,
+                    mapping: formatChord(draft!.mappings[b.id]),
+                  })}
                   onClick={() => setEditing(b.id)}
                 >
                   <b>{b.label}</b>
@@ -283,10 +314,10 @@ export function App({ runtime }: { runtime: Runtime }) {
                   setEdits({ ...edits, disableSleep: e.target.checked })
                 }
               />
-              自動スリープを無効化
+              {t("自動スリープを無効化")}
             </label>
             {draft?.disableSleep === null && (
-              <p>現在のスリープ設定は未対応です。そのまま保持します。</p>
+              <p>{t("現在のスリープ設定は未対応です。そのまま保持します。")}</p>
             )}
             <div className="actions">
               <button
@@ -298,16 +329,16 @@ export function App({ runtime }: { runtime: Runtime }) {
                   )
                 }
               >
-                デバイスに保存
+                {t("デバイスに保存")}
               </button>
               <button
                 disabled={busy}
                 onClick={() => (dirty ? setPanel("discard") : void run(read))}
               >
-                再読み込み
+                {t("再読み込み")}
               </button>
               <button disabled={!ready} onClick={showImport}>
-                プロファイルを読込
+                {t("プロファイルを読込")}
               </button>
               <button
                 disabled={busy}
@@ -316,7 +347,7 @@ export function App({ runtime }: { runtime: Runtime }) {
                   setPanel("export");
                 }}
               >
-                書き出す
+                {t("書き出す")}
               </button>
               <button
                 disabled={busy}
@@ -324,31 +355,33 @@ export function App({ runtime }: { runtime: Runtime }) {
                   dirty ? setPanel("disconnect") : runtime.service.disconnect()
                 }
               >
-                切断
+                {t("切断")}
               </button>
             </div>
           </section>
         )}
         {busy && state.phase !== "confirming" && (
-          <section className="progress" aria-label="処理中">
+          <section className="progress" aria-label={t("処理中")}>
             <progress value={state.progress} max={4} />
             <p>
-              完了まで本体を近くに置き、このページを開いたままにしてください。転送だけでは成功になりません。
+              {t(
+                "完了まで本体を近くに置き、このページを開いたままにしてください。転送だけでは成功になりません。",
+              )}
             </p>
           </section>
         )}
       </main>
       <footer>
-        <span>非公式プロジェクト · 実機検証は未完了</span>
+        <span>{t("非公式プロジェクト · 実機検証は未完了")}</span>
         <button disabled={busy} onClick={() => setPanel("log")}>
-          操作ログ
+          {t("操作ログ")}
         </button>
         <a
           href="https://support.8bitdo.com/ultimate/micro.html"
           target="_blank"
           rel="noreferrer"
         >
-          公式サポート ↗
+          {t("公式サポート ↗")}
         </a>
       </footer>
       {editing && draft && ready && (
@@ -369,51 +402,55 @@ export function App({ runtime }: { runtime: Runtime }) {
         <Modal
           title={
             prepared.reason === "pre-restore"
-              ? "対応する設定を復元しますか"
-              : "変更を保存しますか"
+              ? t("対応する設定を復元しますか")
+              : t("変更を保存しますか")
           }
           onClose={cancelPrepared}
         >
-          <p>復旧用バックアップを保存しました。</p>
+          <p>{t("復旧用バックアップを保存しました。")}</p>
           <div className="table-wrap">
             <table>
               <thead>
                 <tr>
-                  <th>対象</th>
-                  <th>現在</th>
-                  <th>変更後</th>
+                  <th>{t("対象")}</th>
+                  <th>{t("現在")}</th>
+                  <th>{t("変更後")}</th>
                 </tr>
               </thead>
               <tbody>
                 {prepared.changes.map((c) => (
                   <tr key={c.label}>
-                    <td>{c.label}</td>
-                    <td>{c.before}</td>
-                    <td>{c.after}</td>
+                    <td>{t(c.label)}</td>
+                    <td>{t(c.before)}</td>
+                    <td>{t(c.after)}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
           {prepared.changes.length === 0 && (
-            <p>変更する設定はありません。本体への書き込みは行いません。</p>
+            <p>
+              {t("変更する設定はありません。本体への書き込みは行いません。")}
+            </p>
           )}
           {prepared.reason === "pre-restore" && (
             <>
               <p>
-                現在の未知の設定を保持します。バックアップ全体の上書きは行いません。
+                {t(
+                  "現在の未知の設定を保持します。バックアップ全体の上書きは行いません。",
+                )}
               </p>
-              <h3>スキップする設定</h3>
+              <h3>{t("スキップする設定")}</h3>
               <p>
                 {prepared.skipped
                   .map((id) =>
                     id === "disableSleep"
-                      ? "自動スリープ"
+                      ? t("自動スリープ")
                       : isButtonId(id)
                         ? BUTTON_BY_ID[id].label
                         : id,
                   )
-                  .join("、") || "なし"}
+                  .join(language === "ja" ? "、" : ", ") || t("なし")}
               </p>
             </>
           )}
@@ -427,57 +464,69 @@ export function App({ runtime }: { runtime: Runtime }) {
                 })
               }
             >
-              {prepared.reason === "pre-restore" ? "復元を確定" : "保存を確定"}
+              {prepared.reason === "pre-restore"
+                ? t("復元を確定")
+                : t("保存を確定")}
             </button>
-            <button onClick={cancelPrepared}>キャンセル</button>
+            <button onClick={cancelPrepared}>{t("キャンセル")}</button>
           </div>
         </Modal>
       )}
       {panel === "discard" && (
-        <Modal title="下書きを破棄して再読み込みしますか" onClose={clearPanel}>
-          <p>未保存の変更は失われます。本体の設定は変更しません。</p>
-          <button onClick={() => void run(read)}>破棄して読み込む</button>
-          <button onClick={clearPanel}>編集を続ける</button>
+        <Modal
+          title={t("下書きを破棄して再読み込みしますか")}
+          onClose={clearPanel}
+        >
+          <p>{t("未保存の変更は失われます。本体の設定は変更しません。")}</p>
+          <button onClick={() => void run(read)}>
+            {t("破棄して読み込む")}
+          </button>
+          <button onClick={clearPanel}>{t("編集を続ける")}</button>
         </Modal>
       )}
       {panel === "disconnect" && (
-        <Modal title="未保存の変更があります" onClose={clearPanel}>
-          <p>必要なら先にプロファイルを書き出してください。</p>
+        <Modal title={t("未保存の変更があります")} onClose={clearPanel}>
+          <p>{t("必要なら先にプロファイルを書き出してください。")}</p>
           <button
             onClick={() => {
               runtime.service.disconnect();
               reset();
             }}
           >
-            破棄して切断
+            {t("破棄して切断")}
           </button>
-          <button onClick={clearPanel}>編集を続ける</button>
-          <button onClick={() => setPanel("export")}>書き出す</button>
+          <button onClick={clearPanel}>{t("編集を続ける")}</button>
+          <button onClick={() => setPanel("export")}>{t("書き出す")}</button>
         </Modal>
       )}
       {panel === "backups" && (
-        <Modal title="ローカルバックアップ" onClose={clearPanel}>
-          <p>このブラウザのサイトデータを消去すると失われます。</p>
+        <Modal title={t("ローカルバックアップ")} onClose={clearPanel}>
+          <p>{t("このブラウザのサイトデータを消去すると失われます。")}</p>
           {invalidBackupCount > 0 && (
             <p role="alert" className="notice">
-              読み込めないバックアップが {invalidBackupCount}{" "}
-              件あります。データは削除していません。正常なバックアップを選んでください。
+              {t("読み込めないバックアップが")}
+              {invalidBackupCount}{" "}
+              {t(
+                "件あります。データは削除していません。正常なバックアップを選んでください。",
+              )}
             </p>
           )}
           {backups.length === 0 ? (
             <p>
-              バックアップはまだありません。保存・復元の前に自動作成します。
+              {t(
+                "バックアップはまだありません。保存・復元の前に自動作成します。",
+              )}
             </p>
           ) : (
             backups.map((b) => (
               <div className="backup" key={b.id}>
                 <p>
-                  {new Date(b.createdAt).toLocaleString()} ·{" "}
+                  {new Date(b.createdAt).toLocaleString(language)} ·{" "}
                   {
                     {
-                      "pre-save": "保存前",
-                      "pre-restore": "復元前",
-                      manual: "手動保存",
+                      "pre-save": t("保存前"),
+                      "pre-restore": t("復元前"),
+                      manual: t("手動保存"),
                     }[b.reason]
                   }
                 </p>
@@ -490,7 +539,7 @@ export function App({ runtime }: { runtime: Runtime }) {
                     })
                   }
                 >
-                  復元内容を確認
+                  {t("復元内容を確認")}
                 </button>
                 <button
                   onClick={() => {
@@ -498,18 +547,20 @@ export function App({ runtime }: { runtime: Runtime }) {
                     setPanel("delete");
                   }}
                 >
-                  削除
+                  {t("削除")}
                 </button>
               </div>
             ))
           )}
-          {!ready && <p>復元するには接続して設定を読み込んでください。</p>}
-          <button onClick={clearPanel}>閉じる</button>
+          {!ready && (
+            <p>{t("復元するには接続して設定を読み込んでください。")}</p>
+          )}
+          <button onClick={clearPanel}>{t("閉じる")}</button>
         </Modal>
       )}
       {panel === "delete" && (
-        <Modal title="バックアップを削除しますか" onClose={clearPanel}>
-          <p>この復旧用コピーは元に戻せません。本体は変更しません。</p>
+        <Modal title={t("バックアップを削除しますか")} onClose={clearPanel}>
+          <p>{t("この復旧用コピーは元に戻せません。本体は変更しません。")}</p>
           <button
             onClick={() =>
               void run(async () => {
@@ -518,15 +569,15 @@ export function App({ runtime }: { runtime: Runtime }) {
               })
             }
           >
-            削除を確定
+            {t("削除を確定")}
           </button>
-          <button onClick={() => setPanel("backups")}>キャンセル</button>
+          <button onClick={() => setPanel("backups")}>{t("キャンセル")}</button>
         </Modal>
       )}
       {panel === "export" && (
-        <Modal title="プロファイルを書き出す" onClose={clearPanel}>
+        <Modal title={t("プロファイルを書き出す")} onClose={clearPanel}>
           <label>
-            プロファイル名
+            {t("プロファイル名")}
             <input
               value={name}
               maxLength={80}
@@ -534,25 +585,28 @@ export function App({ runtime }: { runtime: Runtime }) {
             />
           </label>
           <p>
-            既知の割り当てだけを JSON
-            に保存します。未対応の割り当てを含む場合は書き出せません。
+            {t(
+              "既知の割り当てだけを JSON に保存します。未対応の割り当てを含む場合は書き出せません。",
+            )}
           </p>
           <button
             disabled={!name.trim() || !draft}
             onClick={() => void run(saveProfile)}
           >
-            JSON をダウンロード
+            {t("JSON をダウンロード")}
           </button>
-          <button onClick={clearPanel}>キャンセル</button>
+          <button onClick={clearPanel}>{t("キャンセル")}</button>
         </Modal>
       )}
       {panel === "import" && (
-        <Modal title="プロファイルを読み込む" onClose={clearPanel}>
+        <Modal title={t("プロファイルを読み込む")} onClose={clearPanel}>
           {imported ? (
             <>
               <h3>{imported.name}</h3>
               <p>
-                下書きの対応項目を置き換えます。本体への保存は別途確認します。
+                {t(
+                  "下書きの対応項目を置き換えます。本体への保存は別途確認します。",
+                )}
               </p>
               <ul>
                 {BUTTONS.map((b) => (
@@ -564,12 +618,12 @@ export function App({ runtime }: { runtime: Runtime }) {
               </ul>
               {imported.disableSleep !== undefined && (
                 <p>
-                  自動スリープを無効化：
+                  {t("自動スリープを無効化：")}
                   {draft?.disableSleep === null
-                    ? "現在の値が未対応のため保持"
+                    ? t("現在の値が未対応のため保持")
                     : imported.disableSleep
-                      ? "オン"
-                      : "オフ"}
+                      ? t("オン")
+                      : t("オフ")}
                 </p>
               )}
               <button
@@ -584,13 +638,13 @@ export function App({ runtime }: { runtime: Runtime }) {
                   clearPanel();
                 }}
               >
-                下書きに適用
+                {t("下書きに適用")}
               </button>
             </>
           ) : (
             <>
               <label>
-                プロファイルファイル
+                {t("プロファイルファイル")}
                 <input
                   type="file"
                   accept=".json,application/json"
@@ -605,9 +659,9 @@ export function App({ runtime }: { runtime: Runtime }) {
                   }}
                 />
               </label>
-              <h3>保存済みプロファイル</h3>
+              <h3>{t("保存済みプロファイル")}</h3>
               {profiles.length === 0 ? (
-                <p>保存済みプロファイルはありません。</p>
+                <p>{t("保存済みプロファイルはありません。")}</p>
               ) : (
                 profiles.map((p) => (
                   <button key={p.name} onClick={() => setImported(p)}>
@@ -617,62 +671,75 @@ export function App({ runtime }: { runtime: Runtime }) {
               )}
             </>
           )}
-          <button onClick={clearPanel}>キャンセル</button>
+          <button onClick={clearPanel}>{t("キャンセル")}</button>
         </Modal>
       )}
       {panel === "help" && (
-        <Modal title="使い方と復旧手順" onClose={clearPanel}>
-          <h3>接続</h3>
+        <Modal title={t("使い方と復旧手順")} onClose={clearPanel}>
+          <h3>{t("接続")}</h3>
           <p>
-            K モード専用。Web Bluetooth 対応の Chrome / Edge と HTTPS
-            が必要です。別のアプリが接続中なら終了してください。
+            {t(
+              "K モード専用。Web Bluetooth 対応の Chrome / Edge と HTTPS が必要です。別のアプリが接続中なら終了してください。",
+            )}
           </p>
-          <h3>復旧</h3>
+          <h3>{t("復旧")}</h3>
           <ol>
-            <li>バックアップを削除しない</li>
-            <li>電源・K モードを確認して再接続する</li>
+            <li>{t("バックアップを削除しない")}</li>
+            <li>{t("電源・K モードを確認して再接続する")}</li>
             <li>
-              設定を読み直し、必要ならバックアップから対応する項目を復元する
+              {t(
+                "設定を読み直し、必要ならバックアップから対応する項目を復元する",
+              )}
             </li>
-            <li>続く場合はブラウザを切断し、公式モバイルアプリで確認する</li>
+            <li>
+              {t("続く場合はブラウザを切断し、公式モバイルアプリで確認する")}
+            </li>
           </ol>
           <p>
-            未知の設定は復元しません。スキップ項目は現在値を保持します。バックアップはこのブラウザ専用です。共有にはプロファイル
-            JSON を使ってください。
+            {t(
+              "未知の設定は復元しません。スキップ項目は現在値を保持します。バックアップはこのブラウザ専用です。共有にはプロファイル JSON を使ってください。",
+            )}
           </p>
           <p>
-            保存後、本体が先頭2バイトを更新することがあります。この2バイトは一致比較から除外し、
-            全4ページのCRCと残り178バイトを検証します。先頭2バイトの意味は未解明です。
+            {t(
+              "保存後、本体が先頭2バイトを更新することがあります。この2バイトは一致比較から除外し、 全4ページのCRCと残り178バイトを検証します。先頭2バイトの意味は未解明です。",
+            )}
           </p>
           <p>
-            調査対象の実機でAボタンの保存と公式アプリ表示を確認済みです。復元と他の環境は未検証です。
+            {t(
+              "調査対象の実機でAボタンの保存と公式アプリ表示を確認済みです。復元と他の環境は未検証です。",
+            )}
           </p>
-          <button onClick={clearPanel}>閉じる</button>
+          <button onClick={clearPanel}>{t("閉じる")}</button>
         </Modal>
       )}
       {panel === "log" && (
-        <Modal title="操作ログ" onClose={clearPanel}>
-          <p>個体情報や生の設定値は記録しません。</p>
+        <Modal title={t("操作ログ")} onClose={clearPanel}>
+          <p>{t("個体情報や生の設定値は記録しません。")}</p>
           <ol>
             {state.log.map((entry, i) => (
               <li key={i}>
-                {new Date(entry.time).toLocaleTimeString()} ·{" "}
-                {phaseLabels[entry.event as keyof typeof phaseLabels] ??
-                  entry.event}
+                {new Date(entry.time).toLocaleTimeString(language)} ·{" "}
+                {t(
+                  phaseLabels[entry.event as keyof typeof phaseLabels] ??
+                    entry.event,
+                )}
               </li>
             ))}
           </ol>
           {import.meta.env.DEV &&
             import.meta.env.VITE_DIAGNOSTICS === "true" && (
               <section>
-                <h3>開発用診断</h3>
+                <h3>{t("開発用診断")}</h3>
                 <p>
-                  フェーズ：{state.phase} / 受信ページ数：{state.progress} /
-                  最後の通知長：{state.notificationLength ?? "未受信"}
+                  {t("フェーズ：")}
+                  {state.phase} {t("/ 受信ページ数：")}
+                  {state.progress} {t("/ 最後の通知長：")}
+                  {state.notificationLength ?? t("未受信")}
                 </p>
               </section>
             )}
-          <button onClick={clearPanel}>閉じる</button>
+          <button onClick={clearPanel}>{t("閉じる")}</button>
         </Modal>
       )}
     </ModalErrorContext.Provider>

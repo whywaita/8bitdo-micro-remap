@@ -1,10 +1,11 @@
+import { useLanguage } from "../i18n";
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { type ButtonId, BUTTON_BY_ID } from "../../protocol/buttons";
 import {
   KEY_LABELS,
   MODIFIERS,
   encodeChord,
-  formatChord,
+  formatChord as rawFormatChord,
 } from "../../protocol/hid-codec";
 import type { DecodedMapping, HidChord, Modifier } from "../../protocol/types";
 import { Modal } from "./Modal";
@@ -74,6 +75,9 @@ export function MappingEditor({
   onApply: (value: HidChord) => void;
   onClose: () => void;
 }) {
+  const { t } = useLanguage();
+  const formatChord = (value: Parameters<typeof rawFormatChord>[0]) =>
+    t(rawFormatChord(value));
   const [chord, setChord] = useState<HidChord>(
     value.kind === "chord"
       ? structuredClone(value)
@@ -128,18 +132,23 @@ export function MappingEditor({
   );
   return (
     <Modal
-      title={`${BUTTON_BY_ID[button].label} の割り当てを編集`}
+      title={t("{button} の割り当てを編集", {
+        button: BUTTON_BY_ID[button].label,
+      })}
       onClose={onClose}
       capture={capture}
     >
-      <p>現在：{formatChord(value)}</p>
+      <p>
+        {t("現在：")}
+        {formatChord(value)}
+      </p>
       {value.kind === "unknown" && (
         <p className="notice">
-          未対応の割り当てです。変更しなければ元の値を保持します。
+          {t("未対応の割り当てです。変更しなければ元の値を保持します。")}
         </p>
       )}
       <label>
-        キーを検索
+        {t("キーを検索")}
         <input
           type="search"
           value={search}
@@ -147,7 +156,7 @@ export function MappingEditor({
         />
       </label>
       <label>
-        キー
+        {t("キー")}
         <select
           value={chord.key ?? ""}
           onChange={(e) => {
@@ -158,7 +167,7 @@ export function MappingEditor({
             setReplacing(true);
           }}
         >
-          <option value="">通常キーなし</option>
+          <option value="">{t("通常キーなし")}</option>
           {keys.map(([usage, label]) => (
             <option key={usage} value={usage}>
               {label}
@@ -166,9 +175,9 @@ export function MappingEditor({
           ))}
         </select>
       </label>
-      {keys.length === 0 && <p>一致するキーがありません。</p>}
+      {keys.length === 0 && <p>{t("一致するキーがありません。")}</p>}
       <fieldset>
-        <legend>左側の修飾キー</legend>
+        <legend>{t("左側の修飾キー")}</legend>
         {MODIFIERS.map((mod) => (
           <label key={mod}>
             <input
@@ -202,9 +211,9 @@ export function MappingEditor({
                 stopCapture();
             }}
           >
-            ここにフォーカスしてキーを押す。Escape も割り当て可能。
+            {t("ここにフォーカスしてキーを押す。Escape も割り当て可能。")}
           </div>
-          <button onClick={() => setCapture(false)}>入力を終了</button>
+          <button onClick={() => setCapture(false)}>{t("入力を終了")}</button>
         </>
       ) : (
         <button
@@ -214,7 +223,7 @@ export function MappingEditor({
             setCapture(true);
           }}
         >
-          キーボードから入力
+          {t("キーボードから入力")}
         </button>
       )}
       <button
@@ -223,9 +232,9 @@ export function MappingEditor({
           setReplacing(true);
         }}
       >
-        無効にする
+        {t("無効にする")}
       </button>
-      {error && <p role="alert">{error}</p>}
+      {error && <p role="alert">{t(error)}</p>}
       <div className="actions">
         <button
           className="primary"
@@ -241,9 +250,9 @@ export function MappingEditor({
             }
           }}
         >
-          下書きに適用
+          {t("下書きに適用")}
         </button>
-        <button onClick={onClose}>キャンセル</button>
+        <button onClick={onClose}>{t("キャンセル")}</button>
       </div>
     </Modal>
   );

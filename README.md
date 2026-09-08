@@ -33,6 +33,8 @@ Open the printed localhost URL in Chrome or Edge. Production requires HTTPS. Win
 
 ## Configure
 
+Select **日本語** or **English** in the header to change the interface language. Japanese is the default. The preference is stored in localStorage (`8bitdo-micro-remap.language`) and restored on your next visit. Switching languages preserves the current draft. If browser storage is unavailable, switching still works for the current session.
+
 1. Connect and wait for a complete, CRC-validated read.
 2. Select a physical button. Choose a key and up to three left-side modifiers, or capture a physical keyboard chord. Escape is a valid mapping. Capturing a normal key completes capture; releasing a modifier completes a modifier-only capture.
 3. Apply to the local draft. Nothing has been written yet.

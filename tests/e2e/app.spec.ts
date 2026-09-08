@@ -225,13 +225,16 @@ test("desktop and mobile review screenshots", async ({ page }, testInfo) => {
     sessionStorage.setItem("fake-device", btoa(String.fromCharCode(...raw)));
   });
   await connect(page);
+  await page
+    .getByRole("combobox", { name: "Language / 言語" })
+    .selectOption("en");
   await page.screenshot({
     path: testInfo.outputPath("mapping-desktop.png"),
     fullPage: true,
   });
-  await page.getByRole("button", { name: /^A の割り当て/ }).click();
+  await page.getByRole("button", { name: /^A mapping/ }).click();
   await page
-    .getByRole("combobox", { name: "キー", exact: true })
+    .getByRole("combobox", { name: "Key", exact: true })
     .selectOption("22");
   await page.getByRole("checkbox", { name: "ctrl", exact: true }).check();
   await page.screenshot({
@@ -244,13 +247,79 @@ test("desktop and mobile review screenshots", async ({ page }, testInfo) => {
     fullPage: true,
   });
   await page.setViewportSize({ width: 1280, height: 900 });
-  await page.getByRole("button", { name: "下書きに適用" }).click();
-  await page.getByRole("button", { name: "デバイスに保存" }).click();
+  await page.getByRole("button", { name: "Apply to draft" }).click();
+  await page.getByRole("button", { name: "Save to device" }).click();
   await expect(
-    page.getByRole("heading", { name: "変更を保存しますか" }),
+    page.getByRole("heading", { name: "Save changes?" }),
   ).toBeVisible();
   await page.screenshot({
     path: testInfo.outputPath("save-confirmation.png"),
     fullPage: true,
   });
+});
+
+test("English settings persist and support editing on a narrow screen", async ({
+  page,
+}) => {
+  await connect(page);
+  await page
+    .getByRole("combobox", { name: "Language / 言語" })
+    .selectOption("en");
+  await page.setViewportSize({ width: 320, height: 740 });
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  await page.getByRole("button", { name: /^A mapping/ }).click();
+  await expect(
+    page.getByRole("heading", { name: "Edit A mapping" }),
+  ).toBeVisible();
+  await page
+    .getByRole("combobox", { name: "Key", exact: true })
+    .selectOption("40");
+  await page.getByRole("button", { name: "Apply to draft" }).click();
+  await page.getByRole("checkbox", { name: "Disable automatic sleep" }).check();
+  await page.getByRole("button", { name: "Save to device" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Save changes?" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("cell", { name: "Disable automatic sleep" }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Confirm save" }).click();
+  await expect(page.getByText(/Verified/)).toBeVisible();
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  await page.getByRole("button", { name: "Connect controller" }).click();
+  await expect(
+    page.getByRole("button", { name: "A mapping Enter", exact: true }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Import profile" }).click();
+  await page.getByLabel("Profile file").setInputFiles({
+    name: "broken.json",
+    mimeType: "application/json",
+    buffer: Buffer.from("{broken"),
+  });
+  await expect(page.getByRole("dialog").getByRole("alert")).toHaveText(
+    "Check the profile format, name, and mappings.",
+  );
+});
+
+test("English readback failure offers translated recovery instructions", async ({
+  page,
+}) => {
+  await connect(page, "mismatch");
+  await edit(page);
+  await save(page);
+  await page
+    .getByRole("combobox", { name: "Language / 言語" })
+    .selectOption("en");
+  await expect(page.getByRole("alert")).toContainText(
+    "Could not verify the save or restore.",
+  );
+  await page.getByRole("button", { name: "Recovery instructions" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Usage and recovery" }),
+  ).toBeVisible();
 });

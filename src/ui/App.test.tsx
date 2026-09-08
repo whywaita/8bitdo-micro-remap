@@ -220,3 +220,28 @@ it("corrupted saved profiles do not prevent importing a new file", async () => {
   await screen.findByRole("dialog");
   expect(screen.getByLabelText("プロファイルファイル")).toBeTruthy();
 });
+it("switches language without losing a draft and restores the preference", async () => {
+  localStorage.clear();
+  render(<App runtime={runtime} />);
+  await connect();
+  await userEvent.click(screen.getByRole("button", { name: /^A の割り当て/ }));
+  await userEvent.selectOptions(screen.getByLabelText("キー"), "40");
+  await userEvent.click(screen.getByRole("button", { name: "下書きに適用" }));
+  await userEvent.selectOptions(
+    screen.getByRole("combobox", { name: "Language / 言語" }),
+    "en",
+  );
+  expect(screen.getByRole("heading", { name: "Button mappings" })).toBeTruthy();
+  expect(screen.getByRole("button", { name: "A mapping Enter" })).toBeTruthy();
+  expect(localStorage.getItem("8bitdo-micro-remap.language")).toBe("en");
+  expect(document.documentElement.lang).toBe("en");
+  cleanup();
+  render(<App runtime={runtime} />);
+  expect(screen.getByRole("button", { name: "Backups" })).toBeTruthy();
+  await userEvent.selectOptions(
+    screen.getByRole("combobox", { name: "Language / 言語" }),
+    "ja",
+  );
+  expect(document.documentElement.lang).toBe("ja");
+  localStorage.clear();
+});

@@ -2,6 +2,22 @@
 
 An unofficial, local-first keyboard configurator for the 8BitDo Micro. The React application communicates with the controller directly through Web Bluetooth; GitHub Pages serves static HTML, CSS, and JavaScript.
 
+## See it in action
+
+These screenshots show the actual application running with sample mappings and a simulated controller. They illustrate the UI, not a hardware verification result.
+
+**1. Review all 16 button assignments.** Select a button to edit its keyboard action; import or export profiles from the same screen.
+
+![Mapping overview showing all 16 buttons, keyboard shortcuts, and profile controls](docs/screenshots/mappings.png)
+
+**2. Choose a key or capture a shortcut.** Here, physical A is being changed from Enter to Ctrl+S. Applying the change creates a local draft before anything is written to the controller.
+
+![A-button editor with S selected, Ctrl enabled, and a Ctrl+S preview](docs/screenshots/editor.png)
+
+**3. Review before saving.** The app creates a recovery backup and shows the before/after change. Writing starts only after confirmation.
+
+![Save confirmation showing physical A changing from Enter to Ctrl+S after a recovery backup](docs/screenshots/save-confirmation.png)
+
 ## Run locally
 
 Use Node.js 24 LTS and pnpm 10.33.2.

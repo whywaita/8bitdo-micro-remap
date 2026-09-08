@@ -200,13 +200,40 @@ test("normal client operations request only same-origin resources", async ({
   ).toBe(true);
 });
 test("desktop and mobile review screenshots", async ({ page }, testInfo) => {
-  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.addInitScript(() => {
+    const raw = new Uint8Array(180);
+    const mappings = [
+      [12, 40],
+      [16, 42],
+      [20, 224, 6],
+      [24, 224, 25],
+      [28, 224],
+      [32, 225],
+      [36, 224, 29],
+      [40, 224, 225, 29],
+      [52, 75],
+      [56, 78],
+      [60, 41],
+      [64, 44],
+      [68, 82],
+      [72, 81],
+      [76, 80],
+      [80, 79],
+    ];
+    for (const [offset, ...keys] of mappings) raw.set(keys, offset!);
+    sessionStorage.setItem("fake-device", btoa(String.fromCharCode(...raw)));
+  });
   await connect(page);
   await page.screenshot({
     path: testInfo.outputPath("mapping-desktop.png"),
     fullPage: true,
   });
   await page.getByRole("button", { name: /^A の割り当て/ }).click();
+  await page
+    .getByRole("combobox", { name: "キー", exact: true })
+    .selectOption("22");
+  await page.getByRole("checkbox", { name: "ctrl", exact: true }).check();
   await page.screenshot({
     path: testInfo.outputPath("editor-desktop.png"),
     fullPage: true,
@@ -214,6 +241,16 @@ test("desktop and mobile review screenshots", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 320, height: 740 });
   await page.screenshot({
     path: testInfo.outputPath("editor-mobile.png"),
+    fullPage: true,
+  });
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.getByRole("button", { name: "下書きに適用" }).click();
+  await page.getByRole("button", { name: "デバイスに保存" }).click();
+  await expect(
+    page.getByRole("heading", { name: "変更を保存しますか" }),
+  ).toBeVisible();
+  await page.screenshot({
+    path: testInfo.outputPath("save-confirmation.png"),
     fullPage: true,
   });
 });

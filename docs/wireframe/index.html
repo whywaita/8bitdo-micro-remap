@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>全画面一覧 | Micro Wireframe</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip" href="#main">本文へ</a>
+    <div class="review-bar">
+      <span>WIREFRAME / 静的サンプル · 実機操作なし</span
+      ><a href="index.html">全画面一覧 ↗</a>
+    </div>
+    <header>
+      <a class="brand" href="welcome.html"
+        >MICRO<span>WEB CONFIGURATOR</span></a
+      >
+      <nav aria-label="メイン">
+        <a href="ready.html">Mapping</a><a href="backups.html">Backups</a
+        ><a href="help.html">Support</a>
+      </nav>
+    </header>
+    <main id="main">
+      <div class="eyebrow">SCREEN ATLAS / SEPTEMBER 2026</div>
+      <h1>Micro.<br /><span class="muted">すべての画面と状態。</span></h1>
+      <p class="lead">62 の静的画面。接続から編集、保存、復旧まで。</p>
+      <div class="actions">
+        <a class="button primary" href="welcome.html">接続からたどる</a
+        ><a class="button" href="ready.html">編集画面を見る</a>
+      </div>
+      <p class="intro">
+        design.md / impl.md
+        の初期リリースを対象とした画面一覧。ダイアログ・途中経過・空状態・全エラーコードを含みます。各ページは固定サンプルです。フォームは入力可能ですが、処理や保存は行いません。
+      </p>
+      <div class="flow">
+        接続 → 読み込み → 編集 → 最新設定の確認 → バックアップ → 確認 → 転送 →
+        確定 → 照合
+      </div>
+      <section class="atlas-group">
+        <h2>01 接続</h2>
+        <div class="atlas-grid">
+          <a class="atlas-card" href="welcome.html"
+            ><span>01 / welcome</span>
+            <h3>小さなコントローラーに、あなたの操作を。</h3>
+            <p>Micro のキーボード割り当てを、ブラウザから。</p>
+            <b class="arrow">↗</b></a
+          ><a class="atlas-card" href="unsupported.html"
+            ><span>02 / unsupported</span>
+            <h3>このブラウザは接続に対応していません</h3>
+            <p>Web Bluetooth が利用できません。</p>
+            <code>UNSUPPORTED_BROWSER</code><b class="arrow">↗</b></a
+          ><a class="atlas-card" href="insecure.html"
+            ><span>03 / insecure</span>
+            <h3>安全な接続で開いてください</h3>
+            <p>実際の設定アプリには HTTPS または localhost が必要です。</p>
+            <b class="arrow">↗</b></a
+          ><a class="atlas-card" href="chooser.html"
+            ><span>04 / chooser</span>
+            <h3>コントローラーを選択</h3>
+            <p>ブラウザの選択ウィンドウで Micro を選びます。</p>
+            <b class="arrow">↗</b></a
+          ><a class="atlas-card" href="chooser-cancelled.html"
+            ><span>05 / chooser-cancelled</span>
+            <h3>接続をキャンセルしました</h3>
+            <p>コントローラーには変更していません。</p>
+            <code>CHOOSER_CANCELLED</code><b class="arrow">↗</b></a
+          ><a class="atlas-card" href="connecting.html"
+            ><span>06 / connecting</span>
+            <h3>接続しています</h3>
+            <p>コントローラーの応答を待っています。</p>
+            <b class="arrow">↗</b></a
+          ><a class="atlas-card" href="subscribing.html"
+            ><span>07 / subscribing</span>
+            <h3>設定の受信を準備しています</h3>
+            <p>接続したコントローラーから設定を受け取る準備中です。</p>
+            <b class="arrow">↗</b></a
+          ><a class="atlas-card" href="reading.html"
+            ><span>08 / reading</span>
+            <h3>設定を読み込んでいます</h3>
+            <p>設定のすべてを受信するまで編集できません。</p>
+            <b class="arrow">↗</b></a
+          >
+        </div>
+      </section>
+      <section class="atlas-group">
+        <h2>02 編集</h2>
+        <div class="atlas-grid">
+          <a class="atlas-card" href="ready.html"
+            ><span>09 / ready</span>
+            <h3>ボタンの割り当て</h3>
+            <p>接続済み · K モード · 未保存の変更なし</p>
+            <b class="arrow">↗</b></a
+          ><a class="atlas-card" href="dirty.html"
+            ><span>10 / dirty</span>
+            <h3>ボタンの割り当て</h3>
+            <p>接続済み · 未保存の変更 2 件</p>
+            <b class="arrow">↗</b></a
+          ><a class="atlas-card" href="editor.html"
+            ><span>11 / editor</span>
+            <h3>A の割り当てを編集</h3>
+            <p>現在の割り当て：Enter</p>
+            <b class="arrow">↗</b></a
+          ><a class="atlas-card" href="capture.html"
+            ><span>12 / capture</span>
+            <h3>キーの組み合わせを入力</h3>
+            <p>割り当てたいキーを押してください。</p>
+            <b class="arrow">↗</b></a
+          ><a class="atlas-card" href="picker-empty.html"
+            ><span>13 / picker-empty</span>
+            <h3>一致するキーがありません</h3>
+            <p>検索条件を短くするか、別のキー名を入力してください。</p>
+            <b class="arrow">↗</b></a
+          ><a class="atlas-card" href="disabled.html"
+            ><span>14 / disabled</span>
+            <h3>A を無効にする</h3>
+            <p>このボタンを押してもキーを送信しません。</p>
+            <b class="arrow">↗</b></a
+          ><a class="atlas-card" href="unknown.html"
+            ><span>15 / unknown</span>
+            <h3>未対応の割り当て</h3>
+            <p>この値は表示できますが、そのまま編集できません。</p>
+            <b class="arrow">↗</b></a
+          ><a class="atlas-card" href="sleep.html"
+            ><span>16 / sleep</span>
+            <h3>自動スリープ</h3>
+            <p>
+              自動スリープを無効にすると、使っていないときも本体がスリープしなくなります。
+            </p>
+            <b class="arrow">↗</b></a
+          ><a class="atlas-card" href="sleep-unknown.html"
+            ><span>17 / sleep-unknown</span>
+            <h3>スリープ設定を変更できません</h3>
+            <p>本体の現在の値を解釈できません。</p>
+            <b class="arrow">↗</b></a
+          ><a class="atlas-card" href="discard.html"
+            ><span>18 / discard</span>
+            <h3>下書きを破棄して再読み込みしますか</h3>
+            <p>
+              未保存の変更は失われます。コントローラーの設定は変更しません。
+            </p>
+            <b class="arrow">↗</b></a
+          ><a class="atlas-card" href="disconnect-confirm.html"
+            ><span>19 / disconnect-confirm</span>
+            <h3>未保存の変更があります</h3>
+            <p>
+              切断すると現在の接続に対する下書きは破棄されます。必要なら先にプロファイルを書き出してください。
+            </p>
+            <b class="arrow">↗</b></a
+          >
+        </div>
+      </section>
+      <section class="atlas-group">
+        <h2>03 保存</h2>
+        <div class="atlas-grid">
+          <a class="atlas-card" href="prepare-save.html"
+            ><span>20 / prepare-save</span>
+            <h3>保存の準備中</h3>
+            <p>
+              本体の最新設定を読み直し、復旧用コピーをこのブラウザに保存します。
+            </p>
+            <b class="arrow">↗</b></a
+          ><a class="atlas-card" href="save-confirm.html"
+            ><span>21 / save-confirm</span>
+            <h3>変更をデバイスに保存しますか</h3>
+            <p>復旧用バックアップを保存しました。</p>
+            <b class="arrow">↗</b></a
+          ><a class="atlas-card" href="saving.html"
+            ><span>22 / saving</span>
+            <h3>設定を転送しています</h3>
+            <p>
+              完了するまで本体を近くに置き、このページを開いたままにしてください。
+            </p>
+            <b class="arrow">↗</b></a
+          ><a class="atlas-card" href="committing.html"
+            ><span>23 / committing</span>
+            <h3>設定の確定を待っています</h3>
+            <p>転送が終わりました。コントローラーで設定を確定しています。</p>
+            <b class="arrow">↗</b></a
+          ><a class="atlas-card" href="verifying.html"
+            ><span>24 / verifying</span>
+            <h3>保存結果を確認しています</h3>
+            <p>本体から読み直した設定と、意図した変更を照合しています。</p>
+            <b class="arrow">↗</b></a
+          ><a class="atlas-card" href="verified.html"
+            ><span>25 / verified</span>
+            <h3>保存を確認しました</h3>
+            <p>
+              Verified ·
+              本体から読み直した設定が、保存予定の設定とすべて一致しました。
+            </p>
+            <b class="arrow">↗</b></a
+          >
+        </div>
+      </section>
+      <section class="atlas-group">
+        <h2>04 復元</h2>
+        <div class="atlas-grid">
+          <a class="atlas-card" href="backups.html"
+            ><span>26 / backups</span>
+            <h3>ローカルバックアップ</h3>
+            <p>このブラウザに保存された復旧用コピーです。</p>
+            <b class="arrow">↗</b></a
+          ><a class="atlas-card" href="backups-empty.html"
+            ><span>27 / backups-empty</span>
+            <h3>バックアップはまだありません</h3>
+            <p>最初の保存・復元の前に自動で作成されます。</p>
+            <b class="arrow">↗</b></a
+          ><a class="atlas-card" href="restore-prepare.html"
+            ><span>28 / restore-prepare</span>
+            <h3>復元の準備中</h3>
+            <p>現在の設定を読み込み、復元前のバックアップを保存します。</p>
+            <b class="arrow">↗</b></a
+          ><a class="atlas-card" href="restore-confirm.html"
+            ><span>29 / restore-confirm</span>
+            <h3>対応する設定を復元しますか</h3>
+            <p>選択したバックアップ：2026/09/08 18:10</p>
+            <b class="arrow">↗</b></a
+          ><a class="atlas-card" href="restore-noop.html"
+            ><span>30 / restore-noop</span>
+            <h3>復元する変更がありません</h3>
+            <p>
+              対応する設定は現在と同じです。未対応の項目はスキップしました。
+            </p>
+            <b class="arrow">↗</b></a
+          ><a class="atlas-card" href="restoring.html"
+            ><span>31 / restoring</span>
+            <h3>設定を復元しています</h3>
+            <p>対応する項目を転送しています。完了まで切断しないでください。</p>
+            <b class="arrow">↗</b></a
+          ><a class="atlas-card" href="restore-verifying.html"
+            ><span>32 / restore-verifying</span>
+            <h3>復元結果を確認しています</h3>
+            <p>変更予定の設定と読み直した本体の設定を照合しています。</p>
+            <b class="arrow">↗</b></a
+          ><a class="atlas-card" href="restored.html"
+            ><span>33 / restored</span>
+            <h3>復元を確認しました</h3>
+            <p>
+              Verified ·
+              対応する項目の復元と、それ以外の現在値の保持を確認しました。
+            </p>
+            <b class="arrow">↗</b></a
+          ><a class="atlas-card" href="backup-delete.html"
+            ><span>34 / backup-delete</span>
+            <h3>バックアップを削除しますか</h3>
+            <p>2026/09/09 14:32 · 保存前</p>
+            <b class="arrow">↗</b></a
+          ><a class="atlas-card" href="backup-invalid.html"
+            ><span>35 / backup-invalid</span>
+            <h3>バックアップを読み込めません</h3>
+            <p>保存データの形式または長さが正しくありません。</p>
+            <b class="arrow">↗</b></a
+          >
+        </div>
+      </section>
+      <section class="atlas-group">
+        <h2>05 プロファイル</h2>
+        <div class="atlas-grid">
+          <a class="atlas-card" href="import.html"
+            ><span>36 / import</span>
+            <h3>プロファイルを読み込む</h3>
+            <p>名前を付けて書き出した JSON ファイルを選択します。</p>
+            <b class="arrow">↗</b></a
+          ><a class="atlas-card" href="import-preview.html"
+            ><span>37 / import-preview</span>
+            <h3>プロファイルを下書きに適用しますか</h3>
+            <p>デスクトップ操作 · 2026/09/08</p>
+            <b class="arrow">↗</b></a
+          ><a class="atlas-card" href="import-invalid.html"
+            ><span>38 / import-invalid</span>
+            <h3>プロファイルの形式が正しくありません</h3>
+            <p>
+              対応していないスキーマ、欠けたボタン、無効なキーの組み合わせを確認してください。
+            </p>
+            <b class="arrow">↗</b></a
+          ><a class="atlas-card" href="export.html"
+            ><span>39 / export</span>
+            <h3>プロファイルを書き出す</h3>
+            <p>編集中の割り当てを名前付きの JSON として保存します。</p>
+            <b class="arrow">↗</b></a
+          ><a class="atlas-card" href="export-invalid.html"
+            ><span>40 / export-invalid</span>
+            <h3>プロファイルを書き出せません</h3>
+            <p>名前が空、または未対応の割り当てが含まれています。</p>
+            <b class="arrow">↗</b></a
+          ><a class="atlas-card" href="exported.html"
+            ><span>41 / exported</span>
+            <h3>プロファイルを書き出しました</h3>
+            <p>デスクトップ操作.json</p>
+            <b class="arrow">↗</b></a
+          >
+        </div>
+      </section>
+      <section class="atlas-group">
+        <h2>06 エラーと復旧</h2>
+        <div class="atlas-grid">
+          <a class="atlas-card" href="connection-failed.html"
+            ><span>42 / connection-failed</span>
+            <h3>接続できませんでした</h3>
+            <p>
+              本体の電源、K モード、Bluetooth
+              を確認し、他のアプリとの接続を終了して再試行してください。
+            </p>
+            <code>CONNECTION_FAILED</code><b class="arrow">↗</b></a
+          ><a class="atlas-card" href="service-missing.html"
+            ><span>43 / service-missing</span>
+            <h3>対応する設定サービスがありません</h3>
+            <p>選択した機器と K モードを確認して、接続し直してください。</p>
+            <code>SERVICE_NOT_FOUND</code><b class="arrow">↗</b></a
+          ><a class="atlas-card" href="characteristic-missing.html"
+            ><span>44 / characteristic-missing</span>
+            <h3>設定の通信口が見つかりません</h3>
+            <p>
+              この接続では設定を操作できません。機器とモードを確認してください。
+            </p>
+            <code>CHARACTERISTIC_NOT_FOUND</code><b class="arrow">↗</b></a
+          ><a class="atlas-card" href="disconnected.html"
+            ><span>45 / disconnected</span>
+            <h3>接続が切れました</h3>
+            <p>
+              進行中の操作を中止しました。書き込み中だった場合、本体の状態は未確認です。再接続して読み直してください。
+            </p>
+            <code>DISCONNECTED</code><b class="arrow">↗</b></a
+          ><a class="atlas-card" href="read-timeout.html"
+            ><span>46 / read-timeout</span>
+            <h3>読み込みがタイムアウトしました</h3>
+            <p>
+              本体を近くに置いて再接続してください。不完全な設定は編集に使いません。
+            </p>
+            <code>READ_TIMEOUT</code><b class="arrow">↗</b></a
+          ><a class="atlas-card" href="incomplete-config.html"
+            ><span>47 / incomplete-config</span>
+            <h3>設定をすべて受信できませんでした</h3>
+            <p>
+              設定の一部が不足しています。全項目を受信するまで編集できません。
+            </p>
+            <code>INCOMPLETE_CONFIG</code><b class="arrow">↗</b></a
+          ><a class="atlas-card" href="invalid-packet.html"
+            ><span>48 / invalid-packet</span>
+            <h3>設定の応答を読み取れません</h3>
+            <p>
+              応答の形式が正しくありません。読み直しても続く場合は接続を終了してください。
+            </p>
+            <code>INVALID_PACKET</code><b class="arrow">↗</b></a
+          ><a class="atlas-card" href="invalid-crc.html"
+            ><span>49 / invalid-crc</span>
+            <h3>受信した設定を検証できません</h3>
+            <p>
+              データの整合性確認に失敗しました。この結果は編集に使いません。
+            </p>
+            <code>INVALID_CRC</code><b class="arrow">↗</b></a
+          ><a class="atlas-card" href="conflicting-page.html"
+            ><span>50 / conflicting-page</span>
+            <h3>読み込み中の設定が一致しません</h3>
+            <p>
+              同じ項目に異なる応答を受信しました。設定を最初から読み直してください。
+            </p>
+            <code>CONFLICTING_PAGE</code><b class="arrow">↗</b></a
+          ><a class="atlas-card" href="invalid-mapping.html"
+            ><span>51 / invalid-mapping</span>
+            <h3>キーの組み合わせを保存できません</h3>
+            <p>
+              通常キーは1個、通常キーと組み合わせる修飾キーは3個までです。重複する修飾キーを取り除いてください。
+            </p>
+            <code>INVALID_MAPPING</code><b class="arrow">↗</b></a
+          ><a class="atlas-card" href="device-changed.html"
+            ><span>52 / device-changed</span>
+            <h3>本体の設定が変更されています</h3>
+            <p>
+              編集開始時と最新の設定が異なります。書き込みを停止しました。下書きを必要なら書き出し、最新設定を読み直してください。
+            </p>
+            <code>DEVICE_CHANGED</code><b class="arrow">↗</b></a
+          ><a class="atlas-card" href="backup-failed.html"
+            ><span>53 / backup-failed</span>
+            <h3>バックアップを保存できません</h3>
+            <p>
+              ブラウザの保存領域が利用できないか、空き容量が不足しています。設定ページの書き込みは開始していません。
+            </p>
+            <code>BACKUP_FAILED</code><b class="arrow">↗</b></a
+          ><a class="atlas-card" href="write-failed.html"
+            ><span>54 / write-failed</span>
+            <h3>設定の転送に失敗しました</h3>
+            <p>
+              一部だけ転送された可能性があります。設定の確定は送信していません。再接続して状態を確認してください。
+            </p>
+            <code>WRITE_FAILED</code><b class="arrow">↗</b></a
+          ><a class="atlas-card" href="commit-failed.html"
+            ><span>55 / commit-failed</span>
+            <h3>設定の確定を確認できません</h3>
+            <p>
+              本体に反映されたかは未確認です。バックアップを保持しています。接続し直して読み直してください。
+            </p>
+            <code>COMMIT_FAILED</code><b class="arrow">↗</b></a
+          ><a class="atlas-card" href="verify-failed.html"
+            ><span>56 / verify-failed</span>
+            <h3>保存・復元の結果を確認できません</h3>
+            <p>
+              読み直しの失敗、または予定した設定との不一致を検出しました。成功として扱いません。
+            </p>
+            <code>VERIFY_FAILED</code><b class="arrow">↗</b></a
+          ><a class="atlas-card" href="stale-operation.html"
+            ><span>57 / stale-operation</span>
+            <h3>この確認内容は有効ではありません</h3>
+            <p>
+              再接続、別の操作、または確定済みのため、古い確認内容では書き込めません。最新の設定から準備し直してください。
+            </p>
+            <code>STALE_OPERATION</code><b class="arrow">↗</b></a
+          ><a class="atlas-card" href="storage-unavailable.html"
+            ><span>58 / storage-unavailable</span>
+            <h3>ローカル保存領域を利用できません</h3>
+            <p>ブラウザのサイトデータ設定と空き容量を確認してください。</p>
+            <b class="arrow">↗</b></a
+          ><a class="atlas-card" href="recovery.html"
+            ><span>59 / recovery</span>
+            <h3>設定を確認して復旧する</h3>
+            <p>バックアップを消去せず、次の順番で確認してください。</p>
+            <b class="arrow">↗</b></a
+          >
+        </div>
+      </section>
+      <section class="atlas-group">
+        <h2>07 ヘルプ</h2>
+        <div class="atlas-grid">
+          <a class="atlas-card" href="help.html"
+            ><span>60 / help</span>
+            <h3>使い方と対応環境</h3>
+            <p>Micro Web Configurator · 非公式のブラウザ設定ツール</p>
+            <b class="arrow">↗</b></a
+          ><a class="atlas-card" href="log.html"
+            ><span>61 / log</span>
+            <h3>操作ログ</h3>
+            <p>個体情報や生の設定データは記録しません。</p>
+            <b class="arrow">↗</b></a
+          ><a class="atlas-card" href="diagnostics.html"
+            ><span>62 / diagnostics</span>
+            <h3>開発用診断</h3>
+            <p>開発フラグ有効時だけ表示する画面。</p>
+            <b class="arrow">↗</b></a
+          >
+        </div>
+      </section>
+      <aside class="annotation">
+        共通状態：エラー発生フェーズによって戻り先が異なる。保存・復元後の読み込み失敗は結果未確認として復旧へ進む。処理中の競合操作は禁止。未知
+        URL 専用画面は SPA
+        のため対象外。将来のアカウント・同期・ファームウェア更新画面は初期スコープ外。
+      </aside>
+      <p>
+        <a href="https://support.8bitdo.com/ultimate/micro.html"
+          >デザイン参照：8BitDo Micro Ultimate Software ↗</a
+        >
+        ·
+        配色と余白構成を参考にした独自レイアウト。公式画像・ロゴは使用していません。
+      </p>
+    </main>
+    <footer>
+      <span>非公式プロジェクト · 設定データはローカルに</span
+      ><a href="log.html">操作ログ</a><a href="index.html">画面一覧</a>
+    </footer>
+  </body>
+</html>

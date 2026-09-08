@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>A の割り当てを編集 | Micro Wireframe</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip" href="#main">本文へ</a>
+    <div class="review-bar">
+      <span>WIREFRAME / 静的サンプル · 実機操作なし</span
+      ><a href="index.html">全画面一覧 ↗</a>
+    </div>
+    <header>
+      <a class="brand" href="welcome.html"
+        >MICRO<span>WEB CONFIGURATOR</span></a
+      >
+      <nav aria-label="メイン">
+        <a href="ready.html">Mapping</a><a href="backups.html">Backups</a
+        ><a href="help.html">Support</a>
+      </nav>
+    </header>
+    <main id="main">
+      <div class="eyebrow">02 編集 / 11</div>
+      <div class="screen">
+        <h1>A の割り当てを編集</h1>
+        <p class="lead">現在の割り当て：Enter</p>
+        <div class="content">
+          <label for="key-search">キーを検索</label
+          ><input
+            id="key-search"
+            type="search"
+            placeholder="Enter、Escape、F1…"
+          />
+          <div class="picker">
+            <a class="button" href="editor.html">Enter</a
+            ><a class="button" href="editor.html">Escape</a
+            ><a class="button" href="editor.html">Space</a
+            ><a class="button" href="editor.html">Tab</a
+            ><a class="button" href="editor.html">F1</a
+            ><a class="button" href="editor.html">↑</a>
+          </div>
+          <fieldset>
+            <legend>左側の修飾キー</legend>
+            <label><input type="checkbox" checked /> Ctrl</label
+            ><label><input type="checkbox" /> Alt</label
+            ><label><input type="checkbox" /> Shift</label
+            ><label><input type="checkbox" /> Meta</label>
+          </fieldset>
+          <div class="preview">Ctrl + W</div>
+        </div>
+        <div class="actions">
+          <a class="button primary" href="dirty.html">下書きに適用</a
+          ><a class="button" href="ready.html">キャンセル</a
+          ><a class="button" href="capture.html">キーボードから入力</a
+          ><a class="button" href="disabled.html">無効にする</a
+          ><a class="button" href="picker-empty.html">検索結果なしの例</a>
+        </div>
+      </div>
+      <aside class="annotation">
+        <b>画面仕様 · editor</b>
+        <p>入力欄は見た目の確認用。キー一覧・適用後の値は固定サンプル。</p>
+        <div class="scenario-nav">
+          <a class="button" href="dirty.html">← 前の状態</a
+          ><a class="button" href="capture.html">次の状態 →</a>
+        </div>
+      </aside>
+    </main>
+    <footer>
+      <span>非公式プロジェクト · 設定データはローカルに</span
+      ><a href="log.html">操作ログ</a><a href="index.html">画面一覧</a>
+    </footer>
+  </body>
+</html>

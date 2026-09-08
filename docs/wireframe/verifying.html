@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>保存結果を確認しています | Micro Wireframe</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip" href="#main">本文へ</a>
+    <div class="review-bar">
+      <span>WIREFRAME / 静的サンプル · 実機操作なし</span
+      ><a href="index.html">全画面一覧 ↗</a>
+    </div>
+    <header>
+      <a class="brand" href="welcome.html"
+        >MICRO<span>WEB CONFIGURATOR</span></a
+      >
+      <nav aria-label="メイン">
+        <a href="ready.html">Mapping</a><a href="backups.html">Backups</a
+        ><a href="help.html">Support</a>
+      </nav>
+    </header>
+    <main id="main">
+      <div class="eyebrow">03 保存 / 24</div>
+      <div class="screen">
+        <h1>保存結果を確認しています</h1>
+        <p class="lead">
+          本体から読み直した設定と、意図した変更を照合しています。
+        </p>
+        <div class="content">
+          <ol class="steps">
+            <li class="done">設定を再読込</li>
+            <li class="done">復旧用コピーを保存</li>
+            <li class="done">変更を転送</li>
+            <li class="">結果を照合</li>
+          </ol>
+          <progress aria-label="照合の進捗" max="4" value="3"></progress>
+        </div>
+        <div class="actions"></div>
+      </div>
+      <aside class="annotation">
+        <b>画面仕様 · verifying</b>
+        <p>
+          全設定一致 → verified.html。不一致・読込失敗 → verify-failed.html。
+        </p>
+        <div class="scenario-nav">
+          <a class="button" href="committing.html">← 前の状態</a
+          ><a class="button" href="verified.html">次の状態 →</a>
+        </div>
+      </aside>
+    </main>
+    <footer>
+      <span>非公式プロジェクト · 設定データはローカルに</span
+      ><a href="log.html">操作ログ</a><a href="index.html">画面一覧</a>
+    </footer>
+  </body>
+</html>

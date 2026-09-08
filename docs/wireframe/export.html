@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>プロファイルを書き出す | Micro Wireframe</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip" href="#main">本文へ</a>
+    <div class="review-bar">
+      <span>WIREFRAME / 静的サンプル · 実機操作なし</span
+      ><a href="index.html">全画面一覧 ↗</a>
+    </div>
+    <header>
+      <a class="brand" href="welcome.html"
+        >MICRO<span>WEB CONFIGURATOR</span></a
+      >
+      <nav aria-label="メイン">
+        <a href="ready.html">Mapping</a><a href="backups.html">Backups</a
+        ><a href="help.html">Support</a>
+      </nav>
+    </header>
+    <main id="main">
+      <div class="eyebrow">05 プロファイル / 39</div>
+      <div class="screen">
+        <h1>プロファイルを書き出す</h1>
+        <p class="lead">編集中の割り当てを名前付きの JSON として保存します。</p>
+        <div class="content">
+          <label for="profile-name">プロファイル名</label
+          ><input id="profile-name" value="デスクトップ操作" />
+          <p>
+            16
+            ボタンの割り当てと、対応している場合のスリープ設定を含みます。本体識別情報や未知の設定は含みません。
+          </p>
+        </div>
+        <div class="actions">
+          <a class="button primary" href="exported.html">書き出し完了の例</a
+          ><a class="button" href="dirty.html">キャンセル</a
+          ><a class="button" href="export-invalid.html"
+            >書き出せない状態を見る</a
+          >
+        </div>
+      </div>
+      <aside class="annotation">
+        <b>画面仕様 · export</b>
+        <p>静的モックのためダウンロードしない。名前は表示確認用。</p>
+        <div class="scenario-nav">
+          <a class="button" href="import-invalid.html">← 前の状態</a
+          ><a class="button" href="export-invalid.html">次の状態 →</a>
+        </div>
+      </aside>
+    </main>
+    <footer>
+      <span>非公式プロジェクト · 設定データはローカルに</span
+      ><a href="log.html">操作ログ</a><a href="index.html">画面一覧</a>
+    </footer>
+  </body>
+</html>

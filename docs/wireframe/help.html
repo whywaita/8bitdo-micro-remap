@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>使い方と対応環境 | Micro Wireframe</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip" href="#main">本文へ</a>
+    <div class="review-bar">
+      <span>WIREFRAME / 静的サンプル · 実機操作なし</span
+      ><a href="index.html">全画面一覧 ↗</a>
+    </div>
+    <header>
+      <a class="brand" href="welcome.html"
+        >MICRO<span>WEB CONFIGURATOR</span></a
+      >
+      <nav aria-label="メイン">
+        <a href="ready.html">Mapping</a><a href="backups.html">Backups</a
+        ><a href="help.html">Support</a>
+      </nav>
+    </header>
+    <main id="main">
+      <div class="eyebrow">07 ヘルプ / 60</div>
+      <div class="screen">
+        <h1>使い方と対応環境</h1>
+        <p class="lead">Micro Web Configurator · 非公式のブラウザ設定ツール</p>
+        <div class="content">
+          <details open>
+            <summary>対応ブラウザとモード</summary>
+            <p>
+              Web Bluetooth 対応の Chrome /
+              Edge。Windows、macOS、ChromeOS、Android を初期対象とします。K
+              モード専用。実機アプリは HTTPS または localhost が必要です。
+            </p>
+          </details>
+          <details open>
+            <summary>バックアップとプロファイルの違い</summary>
+            <p>
+              バックアップは保存前の復旧用データです。プロファイルは既知の割り当てを共有する
+              JSON です。どちらもクラウド同期しません。
+            </p>
+          </details>
+          <details open>
+            <summary>復元の制限</summary>
+            <p>
+              対応する設定だけを復元し、現在の未知の設定を保持します。未対応項目は確認画面でスキップとして表示します。
+            </p>
+          </details>
+          <details open>
+            <summary>検証状況</summary>
+            <p>
+              これは静的な画面設計です。実装・実機の動作確認済みを意味しません。製品では単体・ブラウザフロー・実機・公式アプリ照合を個別に記録します。
+            </p>
+          </details>
+          <p>
+            <a href="https://support.8bitdo.com/ultimate/micro.html"
+              >8BitDo 公式サポート / デザイン参照元 ↗</a
+            >
+          </p>
+        </div>
+        <div class="actions">
+          <a class="button" href="welcome.html">開始画面へ</a>
+        </div>
+      </div>
+      <aside class="annotation">
+        <b>画面仕様 · help</b>
+        <p>リンクは固定サンプル間の遷移。実際の接続・保存・削除は行わない。</p>
+        <div class="scenario-nav">
+          <a class="button" href="recovery.html">← 前の状態</a
+          ><a class="button" href="log.html">次の状態 →</a>
+        </div>
+      </aside>
+    </main>
+    <footer>
+      <span>非公式プロジェクト · 設定データはローカルに</span
+      ><a href="log.html">操作ログ</a><a href="index.html">画面一覧</a>
+    </footer>
+  </body>
+</html>
